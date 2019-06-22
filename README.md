@@ -12,9 +12,11 @@ Guitar tab generator from note names considering difficulty of different finger 
 	ex: `fur_elise_notes.txt`
 3. Populate the notes source file with the pitches (including octaves) for the song, with one line for each beat and an empty line for a measure break.
 	
-	ex: 
+	ex:
+
 		```
 		*fur_elise_notes.txt*
+		
 		E4
 		Eb4
 		E4
