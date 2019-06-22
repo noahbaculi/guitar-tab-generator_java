@@ -9,15 +9,13 @@ Guitar tab generator from note names considering difficulty of different finger 
 1. Download the project files to a desired directory.
 2. Create a notes source `.txt` file titled `[song_title]_notes.txt` in the first level of the downloaded directory.
 	
-ex: `fur_elise_notes.txt`
+	ex: `fur_elise_notes.txt`
 
 3. Populate the notes source file with the pitches (including octaves) for the song, with one line for each beat and an empty line for a measure break.
 	
-ex:
+	ex: *fur_elise_notes.txt*
 
-```
-*fur_elise_notes.txt*
-
+	```
 E4
 Eb4
 E4
@@ -33,7 +31,7 @@ A3
 C3
 E3
 A3
-```
+	```
 4. Open the `TabGenerator.java` file and replace the `sourceFile` variable filename assignment to point to the desired source notes file.
 	ex: `File sourceFile = new File("fur_elise_notes.txt");`
 5. The `outputRowLength` variable can also be modified to change the length of the output lines as desired.
