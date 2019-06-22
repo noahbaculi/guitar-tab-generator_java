@@ -421,7 +421,7 @@ public class TabGenerator {
 			dRecord.add("|");
 			aRecord.add("|");
 			elowRecord.add("|");
-//			pitchStringFrets.set(0, 0);
+		// pitchStringFrets.set(0, 0);
 		}
 		else if (fretDeltaArray.indexOf(Collections.min(fretDeltaArray)) == 0) {
 			ehighRecord.add(pitchStringFrets.get(fretDeltaArray.indexOf(Collections.min(fretDeltaArray))).toString());
