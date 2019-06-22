@@ -8,9 +8,13 @@ Guitar tab generator from note names considering difficulty of different finger 
 ## How to run:
 1. Download the project files to a desired directory.
 2. Create a notes source `.txt` file titled `[song_title]_notes.txt` in the first level of the downloaded directory.
+	
 	ex: `fur_elise_notes.txt`
 3. Populate the notes source file with the pitches (including octaves) for the song, with one line for each beat and an empty line for a measure break.
-	ex: ```*fur_elise_notes.txt*
+	
+	ex: 
+		```
+		*fur_elise_notes.txt*
 		E4
 		Eb4
 		E4
