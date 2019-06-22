@@ -16,21 +16,21 @@ Guitar tab generator from note names considering difficulty of different finger 
 	ex: *fur_elise_notes.txt*
 
 	```
-E4
-Eb4
-E4
-Eb4
-E4
-B3
-D4
-C4
+	E4
+	Eb4
+	E4
+	Eb4
+	E4
+	B3
+	D4
+	C4
 
-A2A3
-E3
-A3
-C3
-E3
-A3
+	A2A3
+	E3
+	A3
+	C3
+	E3
+	A3
 	```
 4. Open the `TabGenerator.java` file and replace the `sourceFile` variable filename assignment to point to the desired source notes file.
 	ex: `File sourceFile = new File("fur_elise_notes.txt");`
