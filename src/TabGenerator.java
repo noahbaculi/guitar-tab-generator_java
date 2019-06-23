@@ -701,12 +701,16 @@ public class TabGenerator {
 				writer.write(tunedStrings.get(0) + ": ");
 				for (int ii = 0; ii < outputRowLength; ii++) {
 					if (!ehighRecord.isEmpty()) {
-						if (ehighRecord.get(0) == "|" && ehighRecord.get(1) == "|") {
+						if (multipleMeasureBreak == false && ehighRecord.get(0) == "|" && ehighRecord.get(1) == "|") {
 							System.out.print("-" + ehighRecord.get(0));
 							writer.write("-" + ehighRecord.get(0));
 							multipleMeasureBreak = true;
 						}
-						else if (multipleMeasureBreak == true) {  // if there was a "|" output just previously
+						else if (multipleMeasureBreak == true && ehighRecord.get(1) == "|") {  // if the previous output was "|" as well as the next output
+							System.out.print(ehighRecord.get(0));
+							writer.write(ehighRecord.get(0));
+						}
+						else if (multipleMeasureBreak == true && ehighRecord.get(1) != "|") {  // if the previous output was "|" but not the next output
 							System.out.print(ehighRecord.get(0) + "-");
 							writer.write(ehighRecord.get(0) + "-");
 							multipleMeasureBreak = false;
@@ -722,12 +726,16 @@ public class TabGenerator {
 				writer.write("\n" + tunedStrings.get(1) + ": ");
 				for (int ii = 0; ii < outputRowLength; ii++) {
 					if (!bRecord.isEmpty()) {
-						if (bRecord.get(0) == "|" && bRecord.get(1) == "|") {
+						if (multipleMeasureBreak == false && bRecord.get(0) == "|" && bRecord.get(1) == "|") {
 							System.out.print("-" + bRecord.get(0));
 							writer.write("-" + bRecord.get(0));
 							multipleMeasureBreak = true;
 						}
-						else if (multipleMeasureBreak == true) {  // if there was a "|" output just previously
+						else if (multipleMeasureBreak == true && bRecord.get(1) == "|") {  // if the previous output was "|" as well as the next output
+							System.out.print(bRecord.get(0));
+							writer.write(bRecord.get(0));
+						}
+						else if (multipleMeasureBreak == true && bRecord.get(1) != "|") {  // if the previous output was "|" but not the next output
 							System.out.print(bRecord.get(0) + "-");
 							writer.write(bRecord.get(0) + "-");
 							multipleMeasureBreak = false;
@@ -743,12 +751,16 @@ public class TabGenerator {
 				writer.write("\n" + tunedStrings.get(2) + ": ");
 				for (int ii = 0; ii < outputRowLength; ii++) {
 					if (!gRecord.isEmpty()) {
-						if (gRecord.get(0) == "|" && gRecord.get(1) == "|") {
+						if (multipleMeasureBreak == false && gRecord.get(0) == "|" && gRecord.get(1) == "|") {
 							System.out.print("-" + gRecord.get(0));
 							writer.write("-" + gRecord.get(0));
 							multipleMeasureBreak = true;
 						}
-						else if (multipleMeasureBreak == true) {  // if there was a "|" output just previously
+						else if (multipleMeasureBreak == true && gRecord.get(1) == "|") {  // if the previous output was "|" as well as the next output
+							System.out.print(gRecord.get(0));
+							writer.write(gRecord.get(0));
+						}
+						else if (multipleMeasureBreak == true && gRecord.get(1) != "|") {  // if the previous output was "|" but not the next output
 							System.out.print(gRecord.get(0) + "-");
 							writer.write(gRecord.get(0) + "-");
 							multipleMeasureBreak = false;
@@ -764,12 +776,16 @@ public class TabGenerator {
 				writer.write("\n" + tunedStrings.get(3) + ": ");
 				for (int ii = 0; ii < outputRowLength; ii++) {
 					if (!dRecord.isEmpty()) {
-						if (dRecord.get(0) == "|" && dRecord.get(1) == "|") {
+						if (multipleMeasureBreak == false && dRecord.get(0) == "|" && dRecord.get(1) == "|") {
 							System.out.print("-" + dRecord.get(0));
 							writer.write("-" + dRecord.get(0));
 							multipleMeasureBreak = true;
 						}
-						else if (multipleMeasureBreak == true) {  // if there was a "|" output just previously
+						else if (multipleMeasureBreak == true && dRecord.get(1) == "|") {  // if the previous output was "|" as well as the next output
+							System.out.print(dRecord.get(0));
+							writer.write(dRecord.get(0));
+						}
+						else if (multipleMeasureBreak == true && dRecord.get(1) != "|") {  // if the previous output was "|" but not the next output
 							System.out.print(dRecord.get(0) + "-");
 							writer.write(dRecord.get(0) + "-");
 							multipleMeasureBreak = false;
@@ -785,12 +801,16 @@ public class TabGenerator {
 				writer.write("\n" + tunedStrings.get(4) + ": ");
 				for (int ii = 0; ii < outputRowLength; ii++) {
 					if (!aRecord.isEmpty()) {
-						if (aRecord.get(0) == "|" && aRecord.get(1) == "|") {
+						if (multipleMeasureBreak == false && aRecord.get(0) == "|" && aRecord.get(1) == "|") {
 							System.out.print("-" + aRecord.get(0));
 							writer.write("-" + aRecord.get(0));
 							multipleMeasureBreak = true;
 						}
-						else if (multipleMeasureBreak == true) {  // if there was a "|" output just previously
+						else if (multipleMeasureBreak == true && aRecord.get(1) == "|") {  // if the previous output was "|" as well as the next output
+							System.out.print(aRecord.get(0));
+							writer.write(aRecord.get(0));
+						}
+						else if (multipleMeasureBreak == true && aRecord.get(1) != "|") {  // if the previous output was "|" but not the next output
 							System.out.print(aRecord.get(0) + "-");
 							writer.write(aRecord.get(0) + "-");
 							multipleMeasureBreak = false;
@@ -806,12 +826,16 @@ public class TabGenerator {
 				writer.write("\n" + tunedStrings.get(5) + ": ");
 				for (int ii = 0; ii < outputRowLength; ii++) {
 					if (!elowRecord.isEmpty()) {
-						if (elowRecord.get(0) == "|" && elowRecord.get(1) == "|") {
+						if (multipleMeasureBreak == false && elowRecord.get(0) == "|" && elowRecord.get(1) == "|") {
 							System.out.print("-" + elowRecord.get(0));
 							writer.write("-" + elowRecord.get(0));
 							multipleMeasureBreak = true;
 						}
-						else if (multipleMeasureBreak == true) {  // if there was a "|" output just previously
+						else if (multipleMeasureBreak == true && elowRecord.get(1) == "|") {  // if the previous output was "|" as well as the next output
+							System.out.print(elowRecord.get(0));
+							writer.write(elowRecord.get(0));
+						}
+						else if (multipleMeasureBreak == true && elowRecord.get(1) != "|") {  // if the previous output was "|" but not the next output
 							System.out.print(elowRecord.get(0) + "-");
 							writer.write(elowRecord.get(0) + "-");
 							multipleMeasureBreak = false;
