@@ -95,7 +95,8 @@ public class TabGenerator {
 		System.out.println(tunedStrings.get(3) + ": " + dRecord + "\n");
 		System.out.println(tunedStrings.get(4) + ": " + aRecord + "\n");
 		System.out.println(tunedStrings.get(5) + ": " + elowRecord);
-
+		
+		boolean multipleMeasureBreak = false;
 		outputTabToFile(sourceFileName);
 	}
 
@@ -108,8 +109,8 @@ public class TabGenerator {
 			tuning = tuning.replace(" ", ""); // remove all spaces
 			tuning = tuning.replace(",", ""); // remove all commas
 			tuning = tuning.toLowerCase();
-			if (tuning.equals("") || tuning.equals("standard") || tuning.equals("openg") || tuning.equals("opend") || tuning.equals("c6")
-					|| tuning.equals("dsus4")) {
+			if (tuning.equals("") || tuning.equals("standard") || tuning.equals("openg") || tuning.equals("opend")
+					|| tuning.equals("c6") || tuning.equals("dsus4")) {
 				break;
 			}
 		}
@@ -414,6 +415,10 @@ public class TabGenerator {
 
 		// choose string that will play note based on lowest delta (travel) and record
 		// to string records
+//		if (Collections.min(pitchStringFrets) > ehighString.size()) {  // if the beat notes are unplayable
+//			System.out.println("YAS");
+//			System.out.println();
+//		}
 		if (measureBreak == true) {
 			ehighRecord.add("|");
 			bRecord.add("|");
@@ -421,7 +426,16 @@ public class TabGenerator {
 			dRecord.add("|");
 			aRecord.add("|");
 			elowRecord.add("|");
-		// pitchStringFrets.set(0, 0);
+			// pitchStringFrets.set(0, 0);
+		}
+		else if (Collections.min(pitchStringFrets) > ehighString.size()) { // if the beat notes are unplayable
+			System.out.println("YAS");
+			ehighRecord.add("?");
+			bRecord.add("?");
+			gRecord.add("?");
+			dRecord.add("?");
+			aRecord.add("?");
+			elowRecord.add("?");
 		}
 		else if (fretDeltaArray.indexOf(Collections.min(fretDeltaArray)) == 0) {
 			ehighRecord.add(pitchStringFrets.get(fretDeltaArray.indexOf(Collections.min(fretDeltaArray))).toString());
@@ -473,7 +487,9 @@ public class TabGenerator {
 		}
 
 		// set new lastFret to the current fret
-		lastFret = Collections.min(pitchStringFrets);
+		if (measureBreak == false) {
+			lastFret = Collections.min(pitchStringFrets);
+		}
 	}
 
 	private static void recordMultiNote(List<String> noteGroups, int ii) {
@@ -679,13 +695,26 @@ public class TabGenerator {
 			System.out.println();
 
 			int outputRowLength = 20;
+			boolean multipleMeasureBreak = false;
 			while (!ehighRecord.isEmpty()) {
 				System.out.print(tunedStrings.get(0) + ": ");
 				writer.write(tunedStrings.get(0) + ": ");
 				for (int ii = 0; ii < outputRowLength; ii++) {
 					if (!ehighRecord.isEmpty()) {
-						System.out.print("-" + ehighRecord.get(0) + "-");
-						writer.write("-" + ehighRecord.get(0) + "-");
+						if (ehighRecord.get(0) == "|" && ehighRecord.get(1) == "|") {
+							System.out.print("-" + ehighRecord.get(0));
+							writer.write("-" + ehighRecord.get(0));
+							multipleMeasureBreak = true;
+						}
+						else if (multipleMeasureBreak == true) {  // if there was a "|" output just previously
+							System.out.print(ehighRecord.get(0) + "-");
+							writer.write(ehighRecord.get(0) + "-");
+							multipleMeasureBreak = false;
+						}
+						else {
+							System.out.print("-" + ehighRecord.get(0) + "-");
+							writer.write("-" + ehighRecord.get(0) + "-");
+						}
 						ehighRecord.remove(0);
 					}
 				}
@@ -693,8 +722,20 @@ public class TabGenerator {
 				writer.write("\n" + tunedStrings.get(1) + ": ");
 				for (int ii = 0; ii < outputRowLength; ii++) {
 					if (!bRecord.isEmpty()) {
-						System.out.print("-" + bRecord.get(0) + "-");
-						writer.write("-" + bRecord.get(0) + "-");
+						if (bRecord.get(0) == "|" && bRecord.get(1) == "|") {
+							System.out.print("-" + bRecord.get(0));
+							writer.write("-" + bRecord.get(0));
+							multipleMeasureBreak = true;
+						}
+						else if (multipleMeasureBreak == true) {  // if there was a "|" output just previously
+							System.out.print(bRecord.get(0) + "-");
+							writer.write(bRecord.get(0) + "-");
+							multipleMeasureBreak = false;
+						}
+						else {
+							System.out.print("-" + bRecord.get(0) + "-");
+							writer.write("-" + bRecord.get(0) + "-");
+						}
 						bRecord.remove(0);
 					}
 				}
@@ -702,8 +743,20 @@ public class TabGenerator {
 				writer.write("\n" + tunedStrings.get(2) + ": ");
 				for (int ii = 0; ii < outputRowLength; ii++) {
 					if (!gRecord.isEmpty()) {
-						System.out.print("-" + gRecord.get(0) + "-");
-						writer.write("-" + gRecord.get(0) + "-");
+						if (gRecord.get(0) == "|" && gRecord.get(1) == "|") {
+							System.out.print("-" + gRecord.get(0));
+							writer.write("-" + gRecord.get(0));
+							multipleMeasureBreak = true;
+						}
+						else if (multipleMeasureBreak == true) {  // if there was a "|" output just previously
+							System.out.print(gRecord.get(0) + "-");
+							writer.write(gRecord.get(0) + "-");
+							multipleMeasureBreak = false;
+						}
+						else {
+							System.out.print("-" + gRecord.get(0) + "-");
+							writer.write("-" + gRecord.get(0) + "-");
+						}
 						gRecord.remove(0);
 					}
 				}
@@ -711,8 +764,20 @@ public class TabGenerator {
 				writer.write("\n" + tunedStrings.get(3) + ": ");
 				for (int ii = 0; ii < outputRowLength; ii++) {
 					if (!dRecord.isEmpty()) {
-						System.out.print("-" + dRecord.get(0) + "-");
-						writer.write("-" + dRecord.get(0) + "-");
+						if (dRecord.get(0) == "|" && dRecord.get(1) == "|") {
+							System.out.print("-" + dRecord.get(0));
+							writer.write("-" + dRecord.get(0));
+							multipleMeasureBreak = true;
+						}
+						else if (multipleMeasureBreak == true) {  // if there was a "|" output just previously
+							System.out.print(dRecord.get(0) + "-");
+							writer.write(dRecord.get(0) + "-");
+							multipleMeasureBreak = false;
+						}
+						else {
+							System.out.print("-" + dRecord.get(0) + "-");
+							writer.write("-" + dRecord.get(0) + "-");
+						}
 						dRecord.remove(0);
 					}
 				}
@@ -720,8 +785,20 @@ public class TabGenerator {
 				writer.write("\n" + tunedStrings.get(4) + ": ");
 				for (int ii = 0; ii < outputRowLength; ii++) {
 					if (!aRecord.isEmpty()) {
-						System.out.print("-" + aRecord.get(0) + "-");
-						writer.write("-" + aRecord.get(0) + "-");
+						if (aRecord.get(0) == "|" && aRecord.get(1) == "|") {
+							System.out.print("-" + aRecord.get(0));
+							writer.write("-" + aRecord.get(0));
+							multipleMeasureBreak = true;
+						}
+						else if (multipleMeasureBreak == true) {  // if there was a "|" output just previously
+							System.out.print(aRecord.get(0) + "-");
+							writer.write(aRecord.get(0) + "-");
+							multipleMeasureBreak = false;
+						}
+						else {
+							System.out.print("-" + aRecord.get(0) + "-");
+							writer.write("-" + aRecord.get(0) + "-");
+						}
 						aRecord.remove(0);
 					}
 				}
@@ -729,8 +806,20 @@ public class TabGenerator {
 				writer.write("\n" + tunedStrings.get(5) + ": ");
 				for (int ii = 0; ii < outputRowLength; ii++) {
 					if (!elowRecord.isEmpty()) {
-						System.out.print("-" + elowRecord.get(0) + "-");
-						writer.write("-" + elowRecord.get(0) + "-");
+						if (elowRecord.get(0) == "|" && elowRecord.get(1) == "|") {
+							System.out.print("-" + elowRecord.get(0));
+							writer.write("-" + elowRecord.get(0));
+							multipleMeasureBreak = true;
+						}
+						else if (multipleMeasureBreak == true) {  // if there was a "|" output just previously
+							System.out.print(elowRecord.get(0) + "-");
+							writer.write(elowRecord.get(0) + "-");
+							multipleMeasureBreak = false;
+						}
+						else {
+							System.out.print("-" + elowRecord.get(0) + "-");
+							writer.write("-" + elowRecord.get(0) + "-");
+						}
 						elowRecord.remove(0);
 					}
 				}
