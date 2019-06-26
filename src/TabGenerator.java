@@ -848,6 +848,7 @@ public class TabGenerator {
 					}
 				}
 
+				// output two new lines
 				System.out.println();
 				System.out.println();
 				writer.newLine();
