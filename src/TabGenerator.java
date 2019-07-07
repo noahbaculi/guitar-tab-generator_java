@@ -1,4 +1,3 @@
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -21,6 +20,14 @@ public class TabGenerator {
 			"A2", "A#2", "B2", "C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3", "C4", "C#4",
 			"D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4", "C5", "C#5", "D5", "D#5", "E5", "F5", "F#5",
 			"G5", "G#5", "A5", "A#5", "B5", "C6", "C#6", "D6", "D#6", "E6", ""));
+
+	// create readable list of all notes (to be transposed from )
+	protected static List<String> pitchList = new LinkedList<String>(Arrays.asList("A0", "A#0", "B0", "C1", "C#1", "D1",
+			"D#1", "E1", "F1", "F#1", "G1", "G#1", "A1", "A#1", "B1", "C2", "C#2", "D2", "D#2", "E2", "F2", "F#2", "G2",
+			"G#2", "A2", "A#2", "B2", "C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3", "C4",
+			"C#4", "D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4", "C5", "C#5", "D5", "D#5", "E5", "F5",
+			"F#5", "G5", "G#5", "A5", "A#5", "B5", "C6", "C#6", "D6", "D#6", "E6", "F6", "F#6", "G6", "G#6", "A6",
+			"A#6", "B6", "C7", "C#7", "D7", "D#7", "E7", "F7", "F#7", "G7", "G#7", "A7", "A#7", "B7"));
 	// create process-formatted list of reference guitar notes for comparison and
 	// input validation
 	protected static ArrayList<String> guitarRange = new ArrayList<>();
@@ -63,17 +70,53 @@ public class TabGenerator {
 
 	protected static List<String> tunedStrings = new LinkedList<String>(Arrays.asList("e", "B", "G", "D", "A", "E"));
 
+	protected static int transpose = 0;
+
 	public static void main(String[] args) {
+		
+		// TODO create 'main' method to improve usability
+		
 		assignTuningReferences();
 		String sourceFileName = "hey_jude_notes.txt";
-		List<String> noteGroups = readNoteGroups(sourceFileName);
+		List<String> rawNoteGroups = readNoteGroups(sourceFileName);
+		ArrayList<String> noteGroups = new ArrayList<>();
+		
+		System.out.println(rawNoteGroups);
 
+		// clean up input for validation
+		for (int ii = 0; ii < rawNoteGroups.size(); ii++) {
+			rawNoteGroups.set(ii, rawNoteGroups.get(ii).toLowerCase()); // make all notes lower case
+			rawNoteGroups.set(ii, rawNoteGroups.get(ii).replace(" ", "")); // remove all spaces
+			rawNoteGroups.set(ii, rawNoteGroups.get(ii).replace(",", "")); // remove all commas
+			// change all flats to equivalent sharps for ease of processing
+			rawNoteGroups.set(ii, rawNoteGroups.get(ii).replace("gb", "f#"));
+			rawNoteGroups.set(ii, rawNoteGroups.get(ii).replace("ab", "g#"));
+			rawNoteGroups.set(ii, rawNoteGroups.get(ii).replace("bb", "a#"));
+			rawNoteGroups.set(ii, rawNoteGroups.get(ii).replace("db", "c#"));
+			rawNoteGroups.set(ii, rawNoteGroups.get(ii).replace("eb", "d#"));
+			rawNoteGroups.set(ii, rawNoteGroups.get(ii).replace("gb", "f#"));
+			
+			if (chordMap.containsKey(rawNoteGroups.get(ii))) {
+				noteGroups.add(rawNoteGroups.get(ii));
+			}
+			else if (rawNoteGroups.get(ii).isBlank()) {
+				noteGroups.add(rawNoteGroups.get(ii));
+			}
+			else {
+				noteGroups.add(pitchList.get(pitchList.indexOf(rawNoteGroups.get(ii).toUpperCase())+transpose).toLowerCase());
+			}
+			
+		}
+		
+		System.out.println(noteGroups);
+		
 		validateSource(noteGroups);
 
 		// loop through note groups to record frets in string records
 		for (int ii = 0; ii < noteGroups.size(); ii++) {
 			if (chordMap.containsKey(noteGroups.get(ii))) {
 				recordChord(noteGroups, ii);
+				// TODO fix chord tabs with different tunings
 			}
 			// single notes should be 3 characters or less
 			else if (noteGroups.get(ii).length() <= 3) {
@@ -208,7 +251,7 @@ public class TabGenerator {
 		ArrayList<String> inputLines = new ArrayList<>();
 		// change name of source file with list of notes
 		try {
-			File sourceFile = new File("hey_jude_notes.txt");
+			File sourceFile = new File(fileNameSource);
 //			noteGroups.add(sourceFile.getName());
 			FileReader reader = new FileReader(sourceFile);
 			BufferedReader buffIn = new BufferedReader(reader);
@@ -249,19 +292,19 @@ public class TabGenerator {
 	}
 
 	private static void validateSource(List<String> noteGroups) {
-		// clean up input for validation
-		for (int ii = 0; ii < noteGroups.size(); ii++) {
-			noteGroups.set(ii, noteGroups.get(ii).toLowerCase()); // make all notes lower case
-			noteGroups.set(ii, noteGroups.get(ii).replace(" ", "")); // remove all spaces
-			noteGroups.set(ii, noteGroups.get(ii).replace(",", "")); // remove all commas
-			// change all flats to equivalent sharps for ease of processing
-			noteGroups.set(ii, noteGroups.get(ii).replace("gb", "f#"));
-			noteGroups.set(ii, noteGroups.get(ii).replace("ab", "g#"));
-			noteGroups.set(ii, noteGroups.get(ii).replace("bb", "a#"));
-			noteGroups.set(ii, noteGroups.get(ii).replace("db", "c#"));
-			noteGroups.set(ii, noteGroups.get(ii).replace("eb", "d#"));
-			noteGroups.set(ii, noteGroups.get(ii).replace("gb", "f#"));
-		}
+//		// clean up input for validation
+//		for (int ii = 0; ii < noteGroups.size(); ii++) {
+//			noteGroups.set(ii, noteGroups.get(ii).toLowerCase()); // make all notes lower case
+//			noteGroups.set(ii, noteGroups.get(ii).replace(" ", "")); // remove all spaces
+//			noteGroups.set(ii, noteGroups.get(ii).replace(",", "")); // remove all commas
+//			// change all flats to equivalent sharps for ease of processing
+//			noteGroups.set(ii, noteGroups.get(ii).replace("gb", "f#"));
+//			noteGroups.set(ii, noteGroups.get(ii).replace("ab", "g#"));
+//			noteGroups.set(ii, noteGroups.get(ii).replace("bb", "a#"));
+//			noteGroups.set(ii, noteGroups.get(ii).replace("db", "c#"));
+//			noteGroups.set(ii, noteGroups.get(ii).replace("eb", "d#"));
+//			noteGroups.set(ii, noteGroups.get(ii).replace("gb", "f#"));
+//		}
 
 		// split up notes into different elements of new list for note validation
 		ArrayList<String> allNotes = new ArrayList<>();
@@ -305,6 +348,7 @@ public class TabGenerator {
 				System.out.println("Problematic input: " + allNotes.get(ii));
 				System.err.println(
 						"Pitch mismatch! Please input pitches or chords within the range of a guitar with standard tuning as shown above:");
+				System.exit(0);
 				return;
 			}
 		}
@@ -364,12 +408,47 @@ public class TabGenerator {
 		String chordTab = chordMap.get(noteGroups.get(ii));
 
 		// add fret for each string to the string records
-		elowRecord.add("" + chordTab.charAt(0));
-		aRecord.add("" + chordTab.charAt(1));
-		dRecord.add("" + chordTab.charAt(2));
-		gRecord.add("" + chordTab.charAt(3));
-		bRecord.add("" + chordTab.charAt(4));
-		ehighRecord.add("" + chordTab.charAt(5));
+		if (Character.getNumericValue(chordTab.charAt(0))+transpose < 0) {
+			elowRecord.add("?");
+		}
+		else {
+			elowRecord.add("" + (Character.getNumericValue(chordTab.charAt(0))+transpose));
+		}
+
+		if (Character.getNumericValue(chordTab.charAt(1))+transpose < 0) {
+			aRecord.add("?");
+		}
+		else {
+			aRecord.add("" + (Character.getNumericValue(chordTab.charAt(1))+transpose));
+		}
+
+		if (Character.getNumericValue(chordTab.charAt(2))+transpose < 0) {
+			dRecord.add("?");
+		}
+		else {
+			dRecord.add("" + (Character.getNumericValue(chordTab.charAt(2))+transpose));
+		}
+
+		if (Character.getNumericValue(chordTab.charAt(3))+transpose < 0) {
+			gRecord.add("?");
+		}
+		else {
+			gRecord.add("" + (Character.getNumericValue(chordTab.charAt(3))+transpose));
+		}
+
+		if (Character.getNumericValue(chordTab.charAt(4))+transpose < 0) {
+			bRecord.add("?");
+		}
+		else {
+			bRecord.add("" + (Character.getNumericValue(chordTab.charAt(4))+transpose));
+		}
+
+		if (Character.getNumericValue(chordTab.charAt(5))+transpose < 0) {
+			ehighRecord.add("?");
+		}
+		else {
+			ehighRecord.add("" + (Character.getNumericValue(chordTab.charAt(5))+transpose));
+		}
 	}
 
 	private static void recordSingleNote(List<String> noteGroups, int ii) {
@@ -385,22 +464,22 @@ public class TabGenerator {
 				measureBreak = true;
 			}
 			if (noteGroups.get(ii).equals(ehighString.get(stringFret).toLowerCase())) {
-				pitchStringFrets.set(0, stringFret); // the E string has index 0 in pitchStringPositions list
+				pitchStringFrets.set(0, stringFret); // the Ehigh string has index 0 in pitchStringPositions list
 			}
 			if (noteGroups.get(ii).equals(bString.get(stringFret).toLowerCase())) {
 				pitchStringFrets.set(1, stringFret); // the B string has index 1 in pitchStringPositions list
 			}
 			if (noteGroups.get(ii).equals(gString.get(stringFret).toLowerCase())) {
-				pitchStringFrets.set(2, stringFret); // the B string has index 2 in pitchStringPositions list
+				pitchStringFrets.set(2, stringFret); // the G string has index 2 in pitchStringPositions list
 			}
 			if (noteGroups.get(ii).equals(dString.get(stringFret).toLowerCase())) {
-				pitchStringFrets.set(3, stringFret); // the B string has index 3 in pitchStringPositions list
+				pitchStringFrets.set(3, stringFret); // the D string has index 3 in pitchStringPositions list
 			}
 			if (noteGroups.get(ii).equals(aString.get(stringFret).toLowerCase())) {
-				pitchStringFrets.set(4, stringFret); // the B string has index 4 in pitchStringPositions list
+				pitchStringFrets.set(4, stringFret); // the A string has index 4 in pitchStringPositions list
 			}
 			if (noteGroups.get(ii).equals(elowString.get(stringFret).toLowerCase())) {
-				pitchStringFrets.set(5, stringFret); // the B string has index 5 in pitchStringPositions list
+				pitchStringFrets.set(5, stringFret); // the Elow string has index 5 in pitchStringPositions list
 			}
 		}
 
@@ -415,10 +494,6 @@ public class TabGenerator {
 
 		// choose string that will play note based on lowest delta (travel) and record
 		// to string records
-//		if (Collections.min(pitchStringFrets) > ehighString.size()) {  // if the beat notes are unplayable
-//			System.out.println("YAS");
-//			System.out.println();
-//		}
 		if (measureBreak == true) {
 			ehighRecord.add("|");
 			bRecord.add("|");
@@ -429,7 +504,6 @@ public class TabGenerator {
 			// pitchStringFrets.set(0, 0);
 		}
 		else if (Collections.min(pitchStringFrets) > ehighString.size()) { // if the beat notes are unplayable
-			System.out.println("YAS");
 			ehighRecord.add("?");
 			bRecord.add("?");
 			gRecord.add("?");
@@ -671,7 +745,16 @@ public class TabGenerator {
 	}
 
 	private static void outputTabToFile(String sourceFileName) {
-		String outputFileName = "tab_" + sourceFileName;
+		
+		String tranposeFileNameMod;
+		if (transpose == 0) {
+			tranposeFileNameMod = "";
+		}
+		else {
+			tranposeFileNameMod = "transposed_" + transpose + "_";
+		}
+		
+		String outputFileName = "tab_" + tranposeFileNameMod + sourceFileName;
 		BufferedWriter writer;
 		try {
 			writer = new BufferedWriter(new FileWriter(outputFileName));
