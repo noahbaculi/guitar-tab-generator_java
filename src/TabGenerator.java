@@ -72,16 +72,18 @@ public class TabGenerator {
 
 	protected static int transpose = 0;
 
+	protected static String tuning;
+
 	public static void main(String[] args) {
-		
+
 		// TODO create 'main' method to improve usability
-		
+
 		assignTuningReferences();
 		String sourceFileName = "hey_jude_notes.txt";
 		List<String> rawNoteGroups = readNoteGroups(sourceFileName);
 		ArrayList<String> noteGroups = new ArrayList<>();
-		
-		System.out.println(rawNoteGroups);
+
+//		System.out.println(rawNoteGroups);
 
 		// clean up input for validation
 		for (int ii = 0; ii < rawNoteGroups.size(); ii++) {
@@ -95,7 +97,7 @@ public class TabGenerator {
 			rawNoteGroups.set(ii, rawNoteGroups.get(ii).replace("db", "c#"));
 			rawNoteGroups.set(ii, rawNoteGroups.get(ii).replace("eb", "d#"));
 			rawNoteGroups.set(ii, rawNoteGroups.get(ii).replace("gb", "f#"));
-			
+
 			if (chordMap.containsKey(rawNoteGroups.get(ii))) {
 				noteGroups.add(rawNoteGroups.get(ii));
 			}
@@ -103,13 +105,14 @@ public class TabGenerator {
 				noteGroups.add(rawNoteGroups.get(ii));
 			}
 			else {
-				noteGroups.add(pitchList.get(pitchList.indexOf(rawNoteGroups.get(ii).toUpperCase())+transpose).toLowerCase());
+				noteGroups.add(pitchList.get(pitchList.indexOf(rawNoteGroups.get(ii).toUpperCase()) + transpose)
+						.toLowerCase());
 			}
-			
+
 		}
-		
-		System.out.println(noteGroups);
-		
+
+//		System.out.println(noteGroups);
+
 		validateSource(noteGroups);
 
 		// loop through note groups to record frets in string records
@@ -144,7 +147,6 @@ public class TabGenerator {
 	}
 
 	private static void assignTuningReferences() {
-		String tuning = "";
 		Scanner scanObj = new Scanner(System.in); // create a Scanner object
 		while (true) {
 			System.out.print("Enter the guitar tuning (Standard, Open G, Open D, C6, Dsus4): ");
@@ -160,6 +162,7 @@ public class TabGenerator {
 		scanObj.close();
 
 		if (tuning.equals("") || tuning.equals("standard")) {
+			tuning = "standard";
 			return;
 		}
 		else if (tuning.equals("openg")) {
@@ -406,48 +409,64 @@ public class TabGenerator {
 	private static void recordChord(List<String> noteGroups, int ii) {
 		// retrieve corresponding tab string for chord
 		String chordTab = chordMap.get(noteGroups.get(ii));
+//		
+//		System.out.println(noteGroups.get(ii));
+//		
+//		System.out.println(tuning);
+//		
+//		System.out.println();
 
-		// add fret for each string to the string records
-		if (Character.getNumericValue(chordTab.charAt(0))+transpose < 0) {
-			elowRecord.add("?");
+		if (tuning.equals("standard")) {
+			// add fret for each string to the string records
+			if (Character.getNumericValue(chordTab.charAt(0)) + transpose < 0) {
+				elowRecord.add("?");
+			}
+			else {
+				elowRecord.add("" + (Character.getNumericValue(chordTab.charAt(0)) + transpose));
+			}
+
+			if (Character.getNumericValue(chordTab.charAt(1)) + transpose < 0) {
+				aRecord.add("?");
+			}
+			else {
+				aRecord.add("" + (Character.getNumericValue(chordTab.charAt(1)) + transpose));
+			}
+
+			if (Character.getNumericValue(chordTab.charAt(2)) + transpose < 0) {
+				dRecord.add("?");
+			}
+			else {
+				dRecord.add("" + (Character.getNumericValue(chordTab.charAt(2)) + transpose));
+			}
+
+			if (Character.getNumericValue(chordTab.charAt(3)) + transpose < 0) {
+				gRecord.add("?");
+			}
+			else {
+				gRecord.add("" + (Character.getNumericValue(chordTab.charAt(3)) + transpose));
+			}
+
+			if (Character.getNumericValue(chordTab.charAt(4)) + transpose < 0) {
+				bRecord.add("?");
+			}
+			else {
+				bRecord.add("" + (Character.getNumericValue(chordTab.charAt(4)) + transpose));
+			}
+
+			if (Character.getNumericValue(chordTab.charAt(5)) + transpose < 0) {
+				ehighRecord.add("?");
+			}
+			else {
+				ehighRecord.add("" + (Character.getNumericValue(chordTab.charAt(5)) + transpose));
+			}
 		}
 		else {
-			elowRecord.add("" + (Character.getNumericValue(chordTab.charAt(0))+transpose));
-		}
-
-		if (Character.getNumericValue(chordTab.charAt(1))+transpose < 0) {
-			aRecord.add("?");
-		}
-		else {
-			aRecord.add("" + (Character.getNumericValue(chordTab.charAt(1))+transpose));
-		}
-
-		if (Character.getNumericValue(chordTab.charAt(2))+transpose < 0) {
-			dRecord.add("?");
-		}
-		else {
-			dRecord.add("" + (Character.getNumericValue(chordTab.charAt(2))+transpose));
-		}
-
-		if (Character.getNumericValue(chordTab.charAt(3))+transpose < 0) {
-			gRecord.add("?");
-		}
-		else {
-			gRecord.add("" + (Character.getNumericValue(chordTab.charAt(3))+transpose));
-		}
-
-		if (Character.getNumericValue(chordTab.charAt(4))+transpose < 0) {
-			bRecord.add("?");
-		}
-		else {
-			bRecord.add("" + (Character.getNumericValue(chordTab.charAt(4))+transpose));
-		}
-
-		if (Character.getNumericValue(chordTab.charAt(5))+transpose < 0) {
-			ehighRecord.add("?");
-		}
-		else {
-			ehighRecord.add("" + (Character.getNumericValue(chordTab.charAt(5))+transpose));
+			elowRecord.add(noteGroups.get(ii));
+			aRecord.add(noteGroups.get(ii));
+			dRecord.add(noteGroups.get(ii));
+			gRecord.add(noteGroups.get(ii));
+			bRecord.add(noteGroups.get(ii));
+			ehighRecord.add(noteGroups.get(ii));
 		}
 	}
 
@@ -745,15 +764,12 @@ public class TabGenerator {
 	}
 
 	private static void outputTabToFile(String sourceFileName) {
-		
-		String tranposeFileNameMod;
-		if (transpose == 0) {
-			tranposeFileNameMod = "";
-		}
-		else {
+
+		String tranposeFileNameMod = "";
+		if (transpose != 0) {
 			tranposeFileNameMod = "transposed_" + transpose + "_";
 		}
-		
+
 		String outputFileName = "tab_" + tranposeFileNameMod + sourceFileName;
 		BufferedWriter writer;
 		try {
@@ -777,17 +793,19 @@ public class TabGenerator {
 
 			System.out.println();
 
-			int outputRowLength = 20;
+			int outputRowLength = 60;
 			boolean multipleMeasureBreak = false;
 			while (!ehighRecord.isEmpty()) {
 				System.out.print(tunedStrings.get(0) + ": ");
 				writer.write(tunedStrings.get(0) + ": ");
-				for (int ii = 0; ii < outputRowLength; ii++) {
+				for (int outputCharacterCount = 0; outputCharacterCount < outputRowLength;) {
 					if (!ehighRecord.isEmpty()) {
 						if (multipleMeasureBreak == false && ehighRecord.get(0) == "|" && ehighRecord.get(1) == "|") {
 							System.out.print("-" + ehighRecord.get(0));
 							writer.write("-" + ehighRecord.get(0));
 							multipleMeasureBreak = true;
+							outputCharacterCount += 1; // increase outputCharacterCount by 1 to account for separating
+														// dash
 						}
 						else if (multipleMeasureBreak == true && ehighRecord.get(1) == "|") { // if the previous output
 																								// was "|" as well as
@@ -801,22 +819,32 @@ public class TabGenerator {
 							System.out.print(ehighRecord.get(0) + "-");
 							writer.write(ehighRecord.get(0) + "-");
 							multipleMeasureBreak = false;
+							outputCharacterCount += 1; // increase outputCharacterCount by 1 to account for separating
+														// dash
 						}
 						else {
 							System.out.print("-" + ehighRecord.get(0) + "-");
 							writer.write("-" + ehighRecord.get(0) + "-");
+							outputCharacterCount += 2; // increase outputCharacterCount by 2 to account for separating
+														// dashes
 						}
+						outputCharacterCount += ehighRecord.get(0).length();
 						ehighRecord.remove(0);
+					}
+					else {
+						break;
 					}
 				}
 				System.out.print("\n" + tunedStrings.get(1) + ": ");
 				writer.write("\n" + tunedStrings.get(1) + ": ");
-				for (int ii = 0; ii < outputRowLength; ii++) {
+				for (int outputCharacterCount = 0; outputCharacterCount < outputRowLength;) {
 					if (!bRecord.isEmpty()) {
 						if (multipleMeasureBreak == false && bRecord.get(0) == "|" && bRecord.get(1) == "|") {
 							System.out.print("-" + bRecord.get(0));
 							writer.write("-" + bRecord.get(0));
 							multipleMeasureBreak = true;
+							outputCharacterCount += 1; // increase outputCharacterCount by 1 to account for separating
+														// dash
 						}
 						else if (multipleMeasureBreak == true && bRecord.get(1) == "|") { // if the previous output was
 																							// "|" as well as the next
@@ -830,22 +858,32 @@ public class TabGenerator {
 							System.out.print(bRecord.get(0) + "-");
 							writer.write(bRecord.get(0) + "-");
 							multipleMeasureBreak = false;
+							outputCharacterCount += 1; // increase outputCharacterCount by 1 to account for separating
+														// dash
 						}
 						else {
 							System.out.print("-" + bRecord.get(0) + "-");
 							writer.write("-" + bRecord.get(0) + "-");
+							outputCharacterCount += 2; // increase outputCharacterCount by 2 to account for separating
+														// dashes
 						}
+						outputCharacterCount += bRecord.get(0).length();
 						bRecord.remove(0);
+					}
+					else {
+						break;
 					}
 				}
 				System.out.print("\n" + tunedStrings.get(2) + ": ");
 				writer.write("\n" + tunedStrings.get(2) + ": ");
-				for (int ii = 0; ii < outputRowLength; ii++) {
+				for (int outputCharacterCount = 0; outputCharacterCount < outputRowLength;) {
 					if (!gRecord.isEmpty()) {
 						if (multipleMeasureBreak == false && gRecord.get(0) == "|" && gRecord.get(1) == "|") {
 							System.out.print("-" + gRecord.get(0));
 							writer.write("-" + gRecord.get(0));
 							multipleMeasureBreak = true;
+							outputCharacterCount += 1; // increase outputCharacterCount by 1 to account for separating
+														// dash
 						}
 						else if (multipleMeasureBreak == true && gRecord.get(1) == "|") { // if the previous output was
 																							// "|" as well as the next
@@ -859,22 +897,32 @@ public class TabGenerator {
 							System.out.print(gRecord.get(0) + "-");
 							writer.write(gRecord.get(0) + "-");
 							multipleMeasureBreak = false;
+							outputCharacterCount += 1; // increase outputCharacterCount by 1 to account for separating
+														// dash
 						}
 						else {
 							System.out.print("-" + gRecord.get(0) + "-");
 							writer.write("-" + gRecord.get(0) + "-");
+							outputCharacterCount += 2; // increase outputCharacterCount by 2 to account for separating
+														// dashes
 						}
+						outputCharacterCount += gRecord.get(0).length();
 						gRecord.remove(0);
+					}
+					else {
+						break;
 					}
 				}
 				System.out.print("\n" + tunedStrings.get(3) + ": ");
 				writer.write("\n" + tunedStrings.get(3) + ": ");
-				for (int ii = 0; ii < outputRowLength; ii++) {
+				for (int outputCharacterCount = 0; outputCharacterCount < outputRowLength;) {
 					if (!dRecord.isEmpty()) {
 						if (multipleMeasureBreak == false && dRecord.get(0) == "|" && dRecord.get(1) == "|") {
 							System.out.print("-" + dRecord.get(0));
 							writer.write("-" + dRecord.get(0));
 							multipleMeasureBreak = true;
+							outputCharacterCount += 1; // increase outputCharacterCount by 1 to account for separating
+														// dash
 						}
 						else if (multipleMeasureBreak == true && dRecord.get(1) == "|") { // if the previous output was
 																							// "|" as well as the next
@@ -888,22 +936,32 @@ public class TabGenerator {
 							System.out.print(dRecord.get(0) + "-");
 							writer.write(dRecord.get(0) + "-");
 							multipleMeasureBreak = false;
+							outputCharacterCount += 1; // increase outputCharacterCount by 1 to account for separating
+														// dash
 						}
 						else {
 							System.out.print("-" + dRecord.get(0) + "-");
 							writer.write("-" + dRecord.get(0) + "-");
+							outputCharacterCount += 2; // increase outputCharacterCount by 2 to account for separating
+														// dashes
 						}
+						outputCharacterCount += dRecord.get(0).length();
 						dRecord.remove(0);
+					}
+					else {
+						break;
 					}
 				}
 				System.out.print("\n" + tunedStrings.get(4) + ": ");
 				writer.write("\n" + tunedStrings.get(4) + ": ");
-				for (int ii = 0; ii < outputRowLength; ii++) {
+				for (int outputCharacterCount = 0; outputCharacterCount < outputRowLength;) {
 					if (!aRecord.isEmpty()) {
 						if (multipleMeasureBreak == false && aRecord.get(0) == "|" && aRecord.get(1) == "|") {
 							System.out.print("-" + aRecord.get(0));
 							writer.write("-" + aRecord.get(0));
 							multipleMeasureBreak = true;
+							outputCharacterCount += 1; // increase outputCharacterCount by 1 to account for separating
+														// dash
 						}
 						else if (multipleMeasureBreak == true && aRecord.get(1) == "|") { // if the previous output was
 																							// "|" as well as the next
@@ -917,22 +975,32 @@ public class TabGenerator {
 							System.out.print(aRecord.get(0) + "-");
 							writer.write(aRecord.get(0) + "-");
 							multipleMeasureBreak = false;
+							outputCharacterCount += 1; // increase outputCharacterCount by 1 to account for separating
+														// dash
 						}
 						else {
 							System.out.print("-" + aRecord.get(0) + "-");
 							writer.write("-" + aRecord.get(0) + "-");
+							outputCharacterCount += 2; // increase outputCharacterCount by 2 to account for separating
+														// dashes
 						}
+						outputCharacterCount += aRecord.get(0).length();
 						aRecord.remove(0);
+					}
+					else {
+						break;
 					}
 				}
 				System.out.print("\n" + tunedStrings.get(5) + ": ");
 				writer.write("\n" + tunedStrings.get(5) + ": ");
-				for (int ii = 0; ii < outputRowLength; ii++) {
+				for (int outputCharacterCount = 0; outputCharacterCount < outputRowLength;) {
 					if (!elowRecord.isEmpty()) {
 						if (multipleMeasureBreak == false && elowRecord.get(0) == "|" && elowRecord.get(1) == "|") {
 							System.out.print("-" + elowRecord.get(0));
 							writer.write("-" + elowRecord.get(0));
 							multipleMeasureBreak = true;
+							outputCharacterCount += 1; // increase outputCharacterCount by 1 to account for separating
+														// dash
 						}
 						else if (multipleMeasureBreak == true && elowRecord.get(1) == "|") { // if the previous output
 																								// was "|" as well as
@@ -946,12 +1014,20 @@ public class TabGenerator {
 							System.out.print(elowRecord.get(0) + "-");
 							writer.write(elowRecord.get(0) + "-");
 							multipleMeasureBreak = false;
+							outputCharacterCount += 1; // increase outputCharacterCount by 1 to account for separating
+														// dash
 						}
 						else {
 							System.out.print("-" + elowRecord.get(0) + "-");
 							writer.write("-" + elowRecord.get(0) + "-");
+							outputCharacterCount += 2; // increase outputCharacterCount by 2 to account for separating
+														// dashes
 						}
+						outputCharacterCount += elowRecord.get(0).length();
 						elowRecord.remove(0);
+					}
+					else {
+						break;
 					}
 				}
 
