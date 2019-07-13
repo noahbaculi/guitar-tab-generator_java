@@ -85,7 +85,7 @@ public class TabGenerator {
 
 //		System.out.println(rawNoteGroups);
 
-		// clean up input for validation
+		// clean up input and add transpose
 		for (int ii = 0; ii < rawNoteGroups.size(); ii++) {
 			rawNoteGroups.set(ii, rawNoteGroups.get(ii).toLowerCase()); // make all notes lower case
 			rawNoteGroups.set(ii, rawNoteGroups.get(ii).replace(" ", "")); // remove all spaces
@@ -98,20 +98,42 @@ public class TabGenerator {
 			rawNoteGroups.set(ii, rawNoteGroups.get(ii).replace("eb", "d#"));
 			rawNoteGroups.set(ii, rawNoteGroups.get(ii).replace("gb", "f#"));
 
-			if (chordMap.containsKey(rawNoteGroups.get(ii))) {
+			if (chordMap.containsKey(rawNoteGroups.get(ii))) {  // contains chord
 				noteGroups.add(rawNoteGroups.get(ii));
 			}
 			else if (rawNoteGroups.get(ii).isBlank()) {
 				noteGroups.add(rawNoteGroups.get(ii));
 			}
-			else {
-				noteGroups.add(pitchList.get(pitchList.indexOf(rawNoteGroups.get(ii).toUpperCase()) + transpose)
-						.toLowerCase());
+			else if (rawNoteGroups.get(ii).length() <= 3) {  // single notes should be 3 characters or less
+				noteGroups.add(pitchList.get(pitchList.indexOf(rawNoteGroups.get(ii).toUpperCase()) + transpose).toLowerCase());
+			}
+			// note groups longer than 3 characters that are not chords are assumed to be
+			// multiple notes
+			else if (rawNoteGroups.get(ii).length() > 3) { // note groups longer than 3 characters that are not chords are
+														// assumed to be multiple notes
+				// split up notes based on numbers
+				ArrayList<String> chordNotes = new ArrayList<>();
+				ArrayList<Integer> numIndices = new ArrayList<>();
+				for (int yy = 0; yy < rawNoteGroups.get(ii).length(); yy++) {
+					if (Character.isDigit(rawNoteGroups.get(ii).charAt(yy))) {
+						numIndices.add(yy);
+					}
+				}
+//				chordNotes.add(rawNoteGroups.get(ii).substring(0, (numIndices.get(0)) + 1));
+				chordNotes.add(pitchList.get(pitchList.indexOf(rawNoteGroups.get(ii).substring(0, (numIndices.get(0)) + 1).toUpperCase()) + transpose).toLowerCase());
+				for (int yy = 0; yy < (numIndices.size() - 1); yy++) {
+//					chordNotes.add(rawNoteGroups.get(ii).substring((numIndices.get(yy) + 1), (numIndices.get(yy + 1)) + 1));
+//					System.out.println(rawNoteGroups.get(ii).substring((numIndices.get(yy) + 1), (numIndices.get(yy + 1)) + 1));
+//					System.out.println(pitchList.indexOf(rawNoteGroups.get(ii).substring((numIndices.get(yy) + 1), (numIndices.get(yy + 1)) + 1)));
+					chordNotes.add(pitchList.get(pitchList.indexOf(rawNoteGroups.get(ii).substring((numIndices.get(yy) + 1), (numIndices.get(yy + 1)) + 1).toUpperCase()) + transpose).toLowerCase());
+				}
+				noteGroups.add(String.join("", chordNotes));
 			}
 
 		}
 
-//		System.out.println(noteGroups);
+		System.out.println("Tranposed notes: " + noteGroups);
+		System.out.println();
 
 		validateSource(noteGroups);
 
@@ -651,7 +673,7 @@ public class TabGenerator {
 		}
 
 		// creating chord matrix and initializing all values to 100
-		int[][] chordMatrix = new int[playableNotesProduct - chordNotes.size()][chordNotes.size() + 4];
+		int[][] chordMatrix = new int[playableNotesProduct][chordNotes.size() + 4];
 		for (int column = 0; column < (chordNotes.size() + 4); column++) {
 			int rowIndex = 0;
 			for (int[] row : chordMatrix) {
