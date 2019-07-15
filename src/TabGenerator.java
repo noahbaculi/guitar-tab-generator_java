@@ -309,6 +309,16 @@ public class TabGenerator {
 
 		// group notes without the numberless first lines
 		noteGroups.addAll((inputLines.subList(firstNoteIndex, inputLines.size())));
+		
+		// remove ending input empty lines
+		while (true) {
+			if (noteGroups.get(noteGroups.size()-1).equals("")) {
+				noteGroups.remove(noteGroups.size()-1);
+			}
+			else {
+				break;
+			}
+		}
 
 		System.out.println("Notes found in file: " + noteGroups);
 		System.out.println();
