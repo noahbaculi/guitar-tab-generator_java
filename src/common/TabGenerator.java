@@ -1,3 +1,4 @@
+package common;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -11,23 +12,21 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
+
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+
+import views.GuitarGUI;
 
 public class TabGenerator {
 
 	// create readable list of reference guitar notes for comparison and input
 	// validation
-	protected static List<String> guitarRangeOrig = new LinkedList<String>(Arrays.asList("E2", "F2", "F#2", "G2", "G#2",
-			"A2", "A#2", "B2", "C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3", "C4", "C#4",
-			"D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4", "C5", "C#5", "D5", "D#5", "E5", "F5", "F#5",
-			"G5", "G#5", "A5", "A#5", "B5", "C6", "C#6", "D6", "D#6", "E6", ""));
+	protected static List<String> guitarRangeOrig;
 
 	// create readable list of all notes (to be transposed from )
-	protected static List<String> pitchList = new LinkedList<String>(Arrays.asList("A0", "A#0", "B0", "C1", "C#1", "D1",
-			"D#1", "E1", "F1", "F#1", "G1", "G#1", "A1", "A#1", "B1", "C2", "C#2", "D2", "D#2", "E2", "F2", "F#2", "G2",
-			"G#2", "A2", "A#2", "B2", "C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3", "C4",
-			"C#4", "D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4", "C5", "C#5", "D5", "D#5", "E5", "F5",
-			"F#5", "G5", "G#5", "A5", "A#5", "B5", "C6", "C#6", "D6", "D#6", "E6", "F6", "F#6", "G6", "G#6", "A6",
-			"A#6", "B6", "C7", "C#7", "D7", "D#7", "E7", "F7", "F#7", "G7", "G#7", "A7", "A#7", "B7"));
+	protected static List<String> pitchList;
 	// create process-formatted list of reference guitar notes for comparison and
 	// input validation
 	protected static ArrayList<String> guitarRange = new ArrayList<>();
@@ -37,12 +36,12 @@ public class TabGenerator {
 	protected static LinkedHashMap<String, String> chordMap = CreateChordMap();
 
 	// create running record of notes from which to print out later
-	protected static ArrayList<String> ehighRecord = new ArrayList<>();
-	protected static ArrayList<String> bRecord = new ArrayList<>();
-	protected static ArrayList<String> gRecord = new ArrayList<>();
-	protected static ArrayList<String> dRecord = new ArrayList<>();
-	protected static ArrayList<String> aRecord = new ArrayList<>();
-	protected static ArrayList<String> elowRecord = new ArrayList<>();
+	protected static ArrayList<String> ehighRecord;
+	protected static ArrayList<String> bRecord;
+	protected static ArrayList<String> gRecord;
+	protected static ArrayList<String> dRecord;
+	protected static ArrayList<String> aRecord;
+	protected static ArrayList<String> elowRecord;
 
 	// initialize running variable to record last chosen fret to calculate travel
 	protected static float lastFret = 0F;
@@ -68,123 +67,151 @@ public class TabGenerator {
 			Arrays.asList("E2", "F2", "F#2", "G2", "G#2", "A2", "A#2", "B2", "C3", "C#3", "D3", "D#3", "E3", "F3",
 					"F#3", "G3", "G#3", "A3", "A#3", "B3", "C4", "C#4", "D4", "D#4", "E4"));
 
-	protected static List<String> tunedStrings = new LinkedList<String>(Arrays.asList("e", "B", "G", "D", "A", "E"));
+	protected static List<String> tunedStrings;
 
 	protected static int transpose = 0;
 
 	protected static String tuning;
+	public static ArrayList<String> noteGroups;
+	protected static BufferedWriter writer;
+	
+	static List<String> unedited;
+	
+	protected static StringBuilder print;
+	
+	protected static int errNo;
+	protected static StringBuilder message;
+	
+	public static String outputFileName;
 
 	public static void main(String[] args) {
 
+		// Initialize variables
+		guitarRangeOrig = new LinkedList<String>(Arrays.asList("E2", "F2", "F#2", "G2", "G#2",
+				"A2", "A#2", "B2", "C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3", "C4", "C#4",
+				"D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4", "C5", "C#5", "D5", "D#5", "E5", "F5", "F#5",
+				"G5", "G#5", "A5", "A#5", "B5", "C6", "C#6", "D6", "D#6", "E6", ""));
+		
+		pitchList = new LinkedList<String>(Arrays.asList("A0", "A#0", "B0", "C1", "C#1", "D1",
+				"D#1", "E1", "F1", "F#1", "G1", "G#1", "A1", "A#1", "B1", "C2", "C#2", "D2", "D#2", "E2", "F2", "F#2", "G2",
+				"G#2", "A2", "A#2", "B2", "C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3", "C4",
+				"C#4", "D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4", "C5", "C#5", "D5", "D#5", "E5", "F5",
+				"F#5", "G5", "G#5", "A5", "A#5", "B5", "C6", "C#6", "D6", "D#6", "E6", "F6", "F#6", "G6", "G#6", "A6",
+				"A#6", "B6", "C7", "C#7", "D7", "D#7", "E7", "F7", "F#7", "G7", "G#7", "A7", "A#7", "B7"));
+		
+		tunedStrings = new LinkedList<String>(Arrays.asList("e", "B", "G", "D", "A", "E"));
+		
+		ehighRecord = new ArrayList<>();
+		bRecord = new ArrayList<>();
+		gRecord = new ArrayList<>();
+		dRecord = new ArrayList<>();
+		aRecord = new ArrayList<>();
+		elowRecord = new ArrayList<>();
+
 		// TODO create 'main' method to improve usability
+		
+		print = new StringBuilder();
+		print.setLength(0);
+		
+		// To handle errors (See checkForErrors method below
+		errNo = 0;
+		message = new StringBuilder();
+		message.setLength(0);
 
 		assignTuningReferences();
-		String sourceFileName = "hey_jude_notes.txt";
-		List<String> rawNoteGroups = readNoteGroups(sourceFileName);
-		ArrayList<String> noteGroups = new ArrayList<>();
+//		String sourceFileName = "hey_jude_notes.txt";
+		
 
-//		System.out.println(rawNoteGroups);
+		List<String> rawNoteGroups = readNoteGroups();
+//		List<String> rawNoteGroups = readNoteGroups(sourceFileName);
+			
+		// Only continue if error 1 has not been found
+		if (errNo == 0) {
+			noteGroups = new ArrayList<>();
 
-		// clean up input and add transpose
-		for (int ii = 0; ii < rawNoteGroups.size(); ii++) {
-			rawNoteGroups.set(ii, rawNoteGroups.get(ii).toLowerCase()); // make all notes lower case
-			rawNoteGroups.set(ii, rawNoteGroups.get(ii).replace(" ", "")); // remove all spaces
-			rawNoteGroups.set(ii, rawNoteGroups.get(ii).replace(",", "")); // remove all commas
-			// change all flats to equivalent sharps for ease of processing
-			rawNoteGroups.set(ii, rawNoteGroups.get(ii).replace("gb", "f#"));
-			rawNoteGroups.set(ii, rawNoteGroups.get(ii).replace("ab", "g#"));
-			rawNoteGroups.set(ii, rawNoteGroups.get(ii).replace("bb", "a#"));
-			rawNoteGroups.set(ii, rawNoteGroups.get(ii).replace("db", "c#"));
-			rawNoteGroups.set(ii, rawNoteGroups.get(ii).replace("eb", "d#"));
-			rawNoteGroups.set(ii, rawNoteGroups.get(ii).replace("gb", "f#"));
+//			System.out.println(rawNoteGroups);
 
-			if (chordMap.containsKey(rawNoteGroups.get(ii))) {  // contains chord
-				noteGroups.add(rawNoteGroups.get(ii));
-			}
-			else if (rawNoteGroups.get(ii).isBlank()) {
-				noteGroups.add(rawNoteGroups.get(ii));
-			}
-			else if (rawNoteGroups.get(ii).length() <= 3) {  // single notes should be 3 characters or less
-				noteGroups.add(pitchList.get(pitchList.indexOf(rawNoteGroups.get(ii).toUpperCase()) + transpose).toLowerCase());
-			}
-			// note groups longer than 3 characters that are not chords are assumed to be
-			// multiple notes
-			else if (rawNoteGroups.get(ii).length() > 3) { // note groups longer than 3 characters that are not chords are
-														// assumed to be multiple notes
-				// split up notes based on numbers
-				ArrayList<String> chordNotes = new ArrayList<>();
-				ArrayList<Integer> numIndices = new ArrayList<>();
-				for (int yy = 0; yy < rawNoteGroups.get(ii).length(); yy++) {
-					if (Character.isDigit(rawNoteGroups.get(ii).charAt(yy))) {
-						numIndices.add(yy);
-					}
+			// clean up input and add transpose
+			transpose(rawNoteGroups);
+			
+			// Only continue if error 2 has not been found
+			if (errNo == 0) {
+
+//				System.out.println("Transposed notes: " + noteGroups);
+//				print.append("Transposed notes:  " + noteGroups + "\n\n");
+//				System.out.println();
+				
+				validateSource(noteGroups);
+				
+				// Only continue if error 3 has not been found
+				if (errNo == 0) {
+					// loop through note groups to record frets in string records
+					record();
+
+					// TODO manage 3 notes at once (even necessary?)
+
+//					System.out.println(tunedStrings.get(0) + ": " + ehighRecord + "\n");
+//					System.out.println(tunedStrings.get(1) + ": " + bRecord + "\n");
+//					System.out.println(tunedStrings.get(2) + ": " + gRecord + "\n");
+//					System.out.println(tunedStrings.get(3) + ": " + dRecord + "\n");
+//					System.out.println(tunedStrings.get(4) + ": " + aRecord + "\n");
+//					System.out.println(tunedStrings.get(5) + ": " + elowRecord);
+					
+//					print.append(tunedStrings.get(0) + ": " + ehighRecord + "\n\n");
+//					print.append(tunedStrings.get(1) + ": " + bRecord + "\n\n");
+//					print.append(tunedStrings.get(2) + ": " + gRecord + "\n\n");
+//					print.append(tunedStrings.get(3) + ": " + dRecord + "\n\n");
+//					print.append(tunedStrings.get(4) + ": " + aRecord + "\n\n");
+//					print.append(tunedStrings.get(5) + ": " + elowRecord);
+
+					boolean multipleMeasureBreak = false;
+					outputTabToFile();
 				}
-//				chordNotes.add(rawNoteGroups.get(ii).substring(0, (numIndices.get(0)) + 1));
-				chordNotes.add(pitchList.get(pitchList.indexOf(rawNoteGroups.get(ii).substring(0, (numIndices.get(0)) + 1).toUpperCase()) + transpose).toLowerCase());
-				for (int yy = 0; yy < (numIndices.size() - 1); yy++) {
-//					chordNotes.add(rawNoteGroups.get(ii).substring((numIndices.get(yy) + 1), (numIndices.get(yy + 1)) + 1));
-//					System.out.println(rawNoteGroups.get(ii).substring((numIndices.get(yy) + 1), (numIndices.get(yy + 1)) + 1));
-//					System.out.println(pitchList.indexOf(rawNoteGroups.get(ii).substring((numIndices.get(yy) + 1), (numIndices.get(yy + 1)) + 1)));
-					chordNotes.add(pitchList.get(pitchList.indexOf(rawNoteGroups.get(ii).substring((numIndices.get(yy) + 1), (numIndices.get(yy + 1)) + 1).toUpperCase()) + transpose).toLowerCase());
-				}
-				noteGroups.add(String.join("", chordNotes));
-			}
-
-		}
-
-		System.out.println("Tranposed notes: " + noteGroups);
-		System.out.println();
-
-		validateSource(noteGroups);
-
-		// loop through note groups to record frets in string records
-		for (int ii = 0; ii < noteGroups.size(); ii++) {
-			if (chordMap.containsKey(noteGroups.get(ii))) {
-				recordChord(noteGroups, ii);
-				// TODO fix chord tabs with different tunings
-			}
-			// single notes should be 3 characters or less
-			else if (noteGroups.get(ii).length() <= 3) {
-				recordSingleNote(noteGroups, ii);
-			}
-
-			// note groups longer than 3 characters that are not chords are assumed to be
-			// multiple notes
-			else if (noteGroups.get(ii).length() > 3) {
-				recordMultiNote(noteGroups, ii);
 			}
 		}
-
-		// TODO manage 3 notes at once (even necessary?)
-
-		System.out.println(tunedStrings.get(0) + ": " + ehighRecord + "\n");
-		System.out.println(tunedStrings.get(1) + ": " + bRecord + "\n");
-		System.out.println(tunedStrings.get(2) + ": " + gRecord + "\n");
-		System.out.println(tunedStrings.get(3) + ": " + dRecord + "\n");
-		System.out.println(tunedStrings.get(4) + ": " + aRecord + "\n");
-		System.out.println(tunedStrings.get(5) + ": " + elowRecord);
-
-		boolean multipleMeasureBreak = false;
-		outputTabToFile(sourceFileName);
 	}
 
-	private static void assignTuningReferences() {
-		Scanner scanObj = new Scanner(System.in); // create a Scanner object
-		while (true) {
-			System.out.print("Enter the guitar tuning (Standard, Open G, Open D, C6, Dsus4): ");
-			tuning = scanObj.nextLine();
+	protected static void assignTuningReferences() {
+
+			tuning = GuitarGUI.tune;
 			tuning = tuning.replace(" ", ""); // remove all spaces
 			tuning = tuning.replace(",", ""); // remove all commas
 			tuning = tuning.toLowerCase();
-			if (tuning.equals("") || tuning.equals("standard") || tuning.equals("openg") || tuning.equals("opend")
-					|| tuning.equals("c6") || tuning.equals("dsus4")) {
-				break;
-			}
-		}
-		scanObj.close();
 
-		if (tuning.equals("") || tuning.equals("standard")) {
-			tuning = "standard";
+
+//			Scanner scanObj = new Scanner(System.in); // create a Scanner object
+//			while (true) {
+//				System.out.print("Enter the guitar tuning (Standard, Open G, Open D, C6, Dsus4): ");
+//				tuning = scanObj.nextLine();
+//				tuning = tuning.replace(" ", ""); // remove all spaces
+//				tuning = tuning.replace(",", ""); // remove all commas
+//				tuning = tuning.toLowerCase();
+//				if (tuning.equals("") || tuning.equals("standard") || tuning.equals("openg") || tuning.equals("opend")
+//						|| tuning.equals("c6") || tuning.equals("dsus4")) {
+//					break;
+//				}
+//			}
+//			scanObj.close();
+
+
+		if (tuning.equals("standard")) {
+			guitarRangeOrig = Arrays.asList("E2", "F2", "F#2", "G2", "G#2", "A2", "A#2", "B2", "C3", "C#3", "D3", "D#3",
+					"E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3", "C4", "C#4", "D4", "D#4", "E4", "F4", "F#4",
+					"G4", "G#4", "A4", "A#4", "B4", "C5", "C#5", "D5", "D#5", "E5", "F5", "F#5", "G5", "G#5", "A5",
+					"A#5", "B5", "C6", "C#6", "D6", "D#6", "E6", "");
+			ehighString = Arrays.asList("E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4", "C5", "C#5", "D5", "D#5",
+					"E5", "F5", "F#5", "G5", "G#5", "A5", "A#5", "B5", "C6", "C#6", "D6", "D#6", "E6");
+			bString = Arrays.asList("B3", "C4", "C#4", "D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4",
+					"C5", "C#5", "D5", "D#5", "E5", "F5", "F#5", "G5", "G#5", "A5", "A#5", "B5");
+			gString = Arrays.asList("G3", "G#3", "A3", "A#3", "B3", "C4", "C#4", "D4", "D#4", "E4", "F4", "F#4", "G4",
+					"G#4", "A4", "A#4", "B4", "C5", "C#5", "D5", "D#5", "E5", "F5", "F#5", "G5");
+			dString = Arrays.asList("D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3", "C4", "C#4", "D4",
+					"D#4", "E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4", "C5", "C#5", "D5");
+			aString = Arrays.asList("A2", "A#2", "B2", "C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3",
+					"A#3", "B3", "C4", "C#4", "D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4");
+			elowString = Arrays.asList("E2", "F2", "F#2", "G2", "G#2", "A2", "A#2", "B2", "C3", "C#3", "D3", "D#3",
+					"E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3", "C4", "C#4", "D4", "D#4", "E4");
+			tunedStrings = Arrays.asList(" e", " B", " G", " D", " A", " E");
 			return;
 		}
 		else if (tuning.equals("openg")) {
@@ -204,7 +231,7 @@ public class TabGenerator {
 					"G#3", "A3", "A#3", "B3", "C4", "C#4", "D4", "D#4", "E4", "F4", "F#4", "G4");
 			elowString = Arrays.asList("D2", "D#2", "E2", "F2", "F#2", "G2", "G#2", "A2", "A#2", "B2", "C3", "C#3",
 					"D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3", "C4", "C#4", "D4");
-			tunedStrings = Arrays.asList("d", "B", "g", "D", "G", "D");
+			tunedStrings = Arrays.asList(" d", " B", " g", " D", " G", " D");
 		}
 		else if (tuning.equals("opend")) {
 			guitarRangeOrig = Arrays.asList("D2", "D#2", "E2", "F2", "F#2", "G2", "G#2", "A2", "A#2", "B2", "C3", "C#3",
@@ -242,7 +269,7 @@ public class TabGenerator {
 					"A#3", "B3", "C4", "C#4", "D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4");
 			elowString = Arrays.asList("C2", "C#2", "D2", "D#2", "E2", "F2", "F#2", "G2", "G#2", "A2", "A#2", "B2",
 					"C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3", "C4");
-			tunedStrings = Arrays.asList("E", "c", "G", " C", " A", " C");
+			tunedStrings = Arrays.asList(" E", " c", " G", " C", " A", " C");
 		}
 		else if (tuning.equals("dsus4")) {
 			guitarRangeOrig = Arrays.asList("D2", "D#2", "E2", "F2", "F#2", "G2", "G#2", "A2", "A#2", "B2", "C3", "C#3",
@@ -261,12 +288,13 @@ public class TabGenerator {
 					"A#3", "B3", "C4", "C#4", "D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4");
 			elowString = Arrays.asList("D2", "D#2", "E2", "F2", "F#2", "G2", "G#2", "A2", "A#2", "B2", "C3", "C#3",
 					"D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3", "C4", "C#4", "D4");
-			tunedStrings = Arrays.asList("d", "a", "G", "D", "A", "D");
+			tunedStrings = Arrays.asList(" d", " a", " G", " D", " A", " D");
 		}
 		// TODO implement more tunings
 	}
-
-	private static List<String> readNoteGroups(String fileNameSource) {
+	
+	protected static List<String> readNoteGroups() {
+//	protected static List<String> readNoteGroups(String fileNameSource) {
 		for (int ii = 0; ii < guitarRangeOrig.size(); ii++) {
 			guitarRange.add(ii, guitarRangeOrig.get(ii).toLowerCase());
 		}
@@ -274,25 +302,30 @@ public class TabGenerator {
 
 		// read source file and split lines
 		ArrayList<String> inputLines = new ArrayList<>();
+		for (String line : GuitarGUI.taLoadedFile.getText().split("\\n")) {
+			inputLines.add(line);
+		}
+		
 		// change name of source file with list of notes
-		try {
-			File sourceFile = new File(fileNameSource);
-//			noteGroups.add(sourceFile.getName());
-			FileReader reader = new FileReader(sourceFile);
-			BufferedReader buffIn = new BufferedReader(reader);
-			String line;
-			while ((line = buffIn.readLine()) != null) {
-				inputLines.add(line);
-			}
-			buffIn.close();
-		}
-		catch (IOException e) {
-			System.err.println(e);
-		}
+//		try {
+//			File sourceFile = new File(fileNameSource);
+//			//noteGroups.add(sourceFile.getName());
+//			FileReader reader = new FileReader(sourceFile);
+//			BufferedReader buffIn = new BufferedReader(reader);
+//			String line;
+//			while ((line = buffIn.readLine()) != null) {
+//				inputLines.add(line);
+//			}
+//			buffIn.close();
+//		}
+//		catch (IOException e) {
+//			System.err.println(e);
+//		}
 
 		// identify first line with "chord" or numbers (notes)
 		int firstNoteIndex = 0;
 		for (int ii = 0; ii < inputLines.size(); ii++) {
+			inputLines.get(ii);
 			if ((inputLines.get(ii).toLowerCase().matches(".*chord.*"))) {
 				firstNoteIndex = ii;
 				break;
@@ -302,31 +335,133 @@ public class TabGenerator {
 				break;
 			}
 			else if (ii == (inputLines.size() - 1)) {
-				System.err.println(
-						"No notes were found in the source file. Please double check that octave numbers are specified (ex: A#4)");
+				errNo = 1;
+				message.append("No notes were found in the source file. Please double check that octave numbers are specified (ex: A#4)");
+//				System.err.println(
+//						"No notes were found in the source file. Please double check that octave numbers are specified (ex: A#4)");
 			}
 		}
 
-		// group notes without the numberless first lines
-		noteGroups.addAll((inputLines.subList(firstNoteIndex, inputLines.size())));
-		
-		// remove ending input empty lines
-		while (true) {
-			if (noteGroups.get(noteGroups.size()-1).equals("")) {
-				noteGroups.remove(noteGroups.size()-1);
-			}
-			else {
-				break;
+		// Continue if error has not been found
+		if (errNo == 0) {
+			// group notes without the numberless first lines
+			noteGroups.addAll((inputLines.subList(firstNoteIndex, inputLines.size())));
+			
+			// remove ending input empty lines
+			while (true) {
+				if (noteGroups.get(noteGroups.size()-1).equals("")) {
+					noteGroups.remove(noteGroups.size()-1);
+				}
+				else {
+					break;
+				}
 			}
 		}
 
-		System.out.println("Notes found in file: " + noteGroups);
-		System.out.println();
+//		System.out.println("Notes found in file: " + noteGroups);
+//		print.append("Notes found in file: " + noteGroups + "\n");
+//		System.out.println();
 
 		return noteGroups;
 	}
 
-	private static void validateSource(List<String> noteGroups) {
+	protected static void transpose(List<String> rawNoteGroups) {
+		noteGroups = new ArrayList<>();
+		unedited = new ArrayList<String>();
+		for (int ii = 0; ii < rawNoteGroups.size(); ii++) {
+			unedited.add(rawNoteGroups.get(ii));
+			
+			rawNoteGroups.set(ii, rawNoteGroups.get(ii).toLowerCase()); // make all notes lower case
+			rawNoteGroups.set(ii, rawNoteGroups.get(ii).replace(" ", "")); // remove all spaces
+			rawNoteGroups.set(ii, rawNoteGroups.get(ii).replace(",", "")); // remove all commas
+			
+			unedited.set(ii, unedited.get(ii).replace(" ", ""));
+			unedited.set(ii, unedited.get(ii).replace(",", ""));
+			
+			// change all flats to equivalent sharps for ease of processing
+			rawNoteGroups.set(ii, rawNoteGroups.get(ii).replace("gb", "f#"));
+			rawNoteGroups.set(ii, rawNoteGroups.get(ii).replace("ab", "g#"));
+			rawNoteGroups.set(ii, rawNoteGroups.get(ii).replace("bb", "a#"));
+			rawNoteGroups.set(ii, rawNoteGroups.get(ii).replace("db", "c#"));
+			rawNoteGroups.set(ii, rawNoteGroups.get(ii).replace("eb", "d#"));
+			rawNoteGroups.set(ii, rawNoteGroups.get(ii).replace("gb", "f#"));
+			
+			if (!rawNoteGroups.get(ii).equals("") && !pitchList.contains(rawNoteGroups.get(ii).toUpperCase()) && errNo == 0 ) {
+				errNo = 2;
+				message.append("\nProblematic input: " + unedited.get(ii));
+				message.append(
+						"\n\nPitch mismatch! Please input pitches or chords within the range of a guitar with standard tuning as shown below:");
+					
+				StringBuilder nRange = new StringBuilder();
+				nRange.append("{ ");
+				for (int index = 0; index < guitarRangeOrig.size() - 1; index++) {
+					nRange.append(guitarRangeOrig.get(index));
+					if (index != guitarRangeOrig.size() - 2) {
+						nRange.append(", ");
+					}
+					if (index == 22) {
+						nRange.append("\n");
+					}
+				}
+				nRange.append(" }");
+				
+				StringBuilder cRange = new StringBuilder();
+				cRange.append("{ ");
+				Set<String> chordSet = chordMap.keySet();
+				int count = 0;
+				for (String chord : chordSet) {
+					cRange.append(chord);
+					if (count != chordSet.size() - 1) {
+						cRange.append(", ");
+					}
+					if (count == 10 || count == 22) {
+						cRange.append("\n");
+					}
+					count++;
+				}
+				cRange.append(" }");
+				
+				message.append("\n\nNote Range: " + nRange.toString() + "\n\nChord Range: " + cRange);
+			}
+			if (errNo == 0) {
+				if (chordMap.containsKey(rawNoteGroups.get(ii))) {  // contains chord
+					noteGroups.add(rawNoteGroups.get(ii));
+				}
+				else if (rawNoteGroups.get(ii).isBlank()) {
+					noteGroups.add(rawNoteGroups.get(ii));
+				}
+				else if (rawNoteGroups.get(ii).length() <= 3) {  // single notes should be 3 characters or less
+					noteGroups.add(pitchList.get(pitchList.indexOf(rawNoteGroups.get(ii).toUpperCase()) + transpose).toLowerCase());
+				}
+				// note groups longer than 3 characters that are not chords are assumed to be
+				// multiple notes
+				else if (rawNoteGroups.get(ii).length() > 3) { // note groups longer than 3 characters that are not chords are
+															// assumed to be multiple notes
+					// split up notes based on numbers
+					ArrayList<String> chordNotes = new ArrayList<>();
+					ArrayList<Integer> numIndices = new ArrayList<>();
+					for (int yy = 0; yy < rawNoteGroups.get(ii).length(); yy++) {
+						if (Character.isDigit(rawNoteGroups.get(ii).charAt(yy))) {
+							numIndices.add(yy);
+						}
+					}
+//					chordNotes.add(rawNoteGroups.get(ii).substring(0, (numIndices.get(0)) + 1));
+					
+					chordNotes.add(pitchList.get(pitchList.indexOf(rawNoteGroups.get(ii).substring(0, (numIndices.get(0)) + 1).toUpperCase()) + transpose).toLowerCase());
+					for (int yy = 0; yy < (numIndices.size() - 1); yy++) {
+//						chordNotes.add(rawNoteGroups.get(ii).substring((numIndices.get(yy) + 1), (numIndices.get(yy + 1)) + 1));
+//						System.out.println(rawNoteGroups.get(ii).substring((numIndices.get(yy) + 1), (numIndices.get(yy + 1)) + 1));
+//						System.out.println(pitchList.indexOf(rawNoteGroups.get(ii).substring((numIndices.get(yy) + 1), (numIndices.get(yy + 1)) + 1)));
+						chordNotes.add(pitchList.get(pitchList.indexOf(rawNoteGroups.get(ii).substring((numIndices.get(yy) + 1), (numIndices.get(yy + 1)) + 1).toUpperCase()) + transpose).toLowerCase());
+					}
+					noteGroups.add(String.join("", chordNotes));
+				}
+			}
+		}
+
+	}
+	
+	protected static void validateSource(List<String> noteGroups) {
 //		// clean up input for validation
 //		for (int ii = 0; ii < noteGroups.size(); ii++) {
 //			noteGroups.set(ii, noteGroups.get(ii).toLowerCase()); // make all notes lower case
@@ -343,7 +478,9 @@ public class TabGenerator {
 
 		// split up notes into different elements of new list for note validation
 		ArrayList<String> allNotes = new ArrayList<>();
+		
 		for (String line : noteGroups) {
+			
 			// chord names and strings less than 3 characters (single notes) are grouped as
 			// their own units
 			if (line.matches(".*chord.*") || line.length() <= 3) {
@@ -364,10 +501,9 @@ public class TabGenerator {
 				}
 			}
 		}
-
 		// loop through all notes and validate by comparing with reference note list and
 		// chord map
-		for (int ii = 0; ii < (allNotes.size()); ii++) {
+		for (int ii = 0; ii < allNotes.size(); ii++) {
 			boolean match = false;
 			if (chordMap.containsKey(allNotes.get(ii))) {
 				match = true;
@@ -376,19 +512,75 @@ public class TabGenerator {
 				match = true;
 			}
 			if (match == false) {
-				System.out.println("Note Range: " + guitarRangeOrig);
-				System.out.println("Chord Range: " + chordMap.keySet());
-				System.out.println();
-				System.out.println("Input: " + allNotes);
-				System.out.println("Problematic input: " + allNotes.get(ii));
-				System.err.println(
-						"Pitch mismatch! Please input pitches or chords within the range of a guitar with standard tuning as shown above:");
-				System.exit(0);
+//				System.out.println("Note Range: " + guitarRangeOrig);
+//				System.out.println("Chord Range: " + chordMap.keySet());
+//				System.out.println();
+//				System.out.println("Input: " + allNotes);
+//				System.out.println("Problematic input: " + allNotes.get(ii));
+//				System.err.println(
+//						"Pitch mismatch! Please input pitches or chords within the range of a guitar with standard tuning as shown above:");
+//				System.exit(0);
+				errNo = 3;
+				message.append("Problematic input: " + unedited.get(ii));
+				message.append(
+						"\n\nPitch mismatch! Please input pitches or chords within the range of a guitar with standard tuning as shown below:");
+					
+				StringBuilder nRange = new StringBuilder();
+				nRange.append("{ ");
+				for (int index = 0; index < guitarRangeOrig.size() - 1; index++) {
+					nRange.append(guitarRangeOrig.get(index));
+					if (index != guitarRangeOrig.size() - 2) {
+						nRange.append(", ");
+					}
+					if (index == 22) {
+						nRange.append("\n");
+					}
+				}
+				nRange.append(" }");
+				
+				StringBuilder cRange = new StringBuilder();
+				cRange.append("{ ");
+				Set<String> chordSet = chordMap.keySet();
+				int count = 0;
+				for (String chord : chordSet) {
+					cRange.append(chord);
+					if (count != chordSet.size() - 1) {
+						cRange.append(", ");
+					}
+					if (count == 10 || count == 22) {
+						cRange.append("\n");
+					}
+					count++;
+				}
+				cRange.append(" }");
+				
+				message.append("\n\nNote Range: " + nRange.toString() + "\n\nChord Range: " + cRange);
+				//System.exit(0);
 				return;
 			}
 		}
 	}
 
+	protected static void record() {
+		// loop through note groups to record frets in string records
+		for (int ii = 0; ii < noteGroups.size(); ii++) {
+			if (chordMap.containsKey(noteGroups.get(ii))) {
+				recordChord(noteGroups, ii);
+				// TODO fix chord tabs with different tunings
+			}
+			// single notes should be 3 characters or less
+			else if (noteGroups.get(ii).length() <= 3) {
+				recordSingleNote(noteGroups, ii);
+			}
+
+			// note groups longer than 3 characters that are not chords are assumed to be
+			// multiple notes
+			else if (noteGroups.get(ii).length() > 3) {
+				recordMultiNote(noteGroups, ii);
+			}
+		}
+	}
+	
 	private static LinkedHashMap<String, String> CreateChordMap() {
 		LinkedHashMap<String, String> chordMap = new LinkedHashMap<String, String>() {
 			{
@@ -795,45 +987,53 @@ public class TabGenerator {
 		lastFret = chordMatrix[bestChordIndex][chordNotes.size() + 1];
 	}
 
-	private static void outputTabToFile(String sourceFileName) {
+	protected static void outputTabToFile() {
 
 		String tranposeFileNameMod = "";
 		if (transpose != 0) {
 			tranposeFileNameMod = "transposed_" + transpose + "_";
 		}
 
-		String outputFileName = "tab_" + tranposeFileNameMod + sourceFileName;
-		BufferedWriter writer;
+		outputFileName = "tab_" + tranposeFileNameMod + GuitarGUI.fileName;
+		//BufferedWriter writer;
 		try {
 			writer = new BufferedWriter(new FileWriter(outputFileName));
-			System.out.println();
+//			System.out.println();
 
-			writer.write(tunedStrings.get(0) + ": " + ehighRecord);
-			writer.newLine();
-			writer.write(tunedStrings.get(1) + ": " + bRecord);
-			writer.newLine();
-			writer.write(tunedStrings.get(2) + ": " + gRecord);
-			writer.newLine();
-			writer.write(tunedStrings.get(3) + ": " + dRecord);
-			writer.newLine();
-			writer.write(tunedStrings.get(4) + ": " + aRecord);
-			writer.newLine();
-			writer.write(tunedStrings.get(5) + ": " + elowRecord);
-			writer.newLine();
-			writer.newLine();
-			writer.newLine();
+//			writer.write(tunedStrings.get(0) + ": " + ehighRecord);
+//			print.append(tunedStrings.get(0) + ": " + ehighRecord + "\n");
+//			writer.newLine();
+//			writer.write(tunedStrings.get(1) + ": " + bRecord);
+//			print.append(tunedStrings.get(1) + ": " + bRecord + "\n");
+//			writer.newLine();
+//			writer.write(tunedStrings.get(2) + ": " + gRecord);
+//			print.append(tunedStrings.get(2) + ": " + gRecord + "\n");
+//			writer.newLine();
+//			writer.write(tunedStrings.get(3) + ": " + dRecord);
+//			print.append(tunedStrings.get(3) + ": " + dRecord + "\n");
+//			writer.newLine();
+//			writer.write(tunedStrings.get(4) + ": " + aRecord);
+//			print.append(tunedStrings.get(4) + ": " + aRecord + "\n");
+//			writer.newLine();
+//			writer.write(tunedStrings.get(5) + ": " + elowRecord);
+//			print.append(tunedStrings.get(5) + ": " + elowRecord + "\n\n\n");
+//			writer.newLine();
+//			writer.newLine();
+//			writer.newLine();
 
-			System.out.println();
+			//System.out.println();
 
 			int outputRowLength = 60;
 			boolean multipleMeasureBreak = false;
 			while (!ehighRecord.isEmpty()) {
 				System.out.print(tunedStrings.get(0) + ": ");
+				print.append(tunedStrings.get(0) + ": ");
 				writer.write(tunedStrings.get(0) + ": ");
 				for (int outputCharacterCount = 0; outputCharacterCount < outputRowLength;) {
 					if (!ehighRecord.isEmpty()) {
 						if (multipleMeasureBreak == false && ehighRecord.get(0) == "|" && ehighRecord.get(1) == "|") {
 							System.out.print("-" + ehighRecord.get(0));
+							print.append("-" + ehighRecord.get(0));
 							writer.write("-" + ehighRecord.get(0));
 							multipleMeasureBreak = true;
 							outputCharacterCount += 1; // increase outputCharacterCount by 1 to account for separating
@@ -843,12 +1043,14 @@ public class TabGenerator {
 																								// was "|" as well as
 																								// the next output
 							System.out.print(ehighRecord.get(0));
+							print.append(ehighRecord.get(0));
 							writer.write(ehighRecord.get(0));
 						}
 						else if (multipleMeasureBreak == true && ehighRecord.get(1) != "|") { // if the previous output
 																								// was "|" but not the
 																								// next output
 							System.out.print(ehighRecord.get(0) + "-");
+							print.append(ehighRecord.get(0) + "-");
 							writer.write(ehighRecord.get(0) + "-");
 							multipleMeasureBreak = false;
 							outputCharacterCount += 1; // increase outputCharacterCount by 1 to account for separating
@@ -856,6 +1058,7 @@ public class TabGenerator {
 						}
 						else {
 							System.out.print("-" + ehighRecord.get(0) + "-");
+							print.append("-" + ehighRecord.get(0) + "-");
 							writer.write("-" + ehighRecord.get(0) + "-");
 							outputCharacterCount += 2; // increase outputCharacterCount by 2 to account for separating
 														// dashes
@@ -868,11 +1071,13 @@ public class TabGenerator {
 					}
 				}
 				System.out.print("\n" + tunedStrings.get(1) + ": ");
+				print.append("\n" + tunedStrings.get(1) + ": ");
 				writer.write("\n" + tunedStrings.get(1) + ": ");
 				for (int outputCharacterCount = 0; outputCharacterCount < outputRowLength;) {
 					if (!bRecord.isEmpty()) {
 						if (multipleMeasureBreak == false && bRecord.get(0) == "|" && bRecord.get(1) == "|") {
 							System.out.print("-" + bRecord.get(0));
+							print.append("-" + bRecord.get(0));
 							writer.write("-" + bRecord.get(0));
 							multipleMeasureBreak = true;
 							outputCharacterCount += 1; // increase outputCharacterCount by 1 to account for separating
@@ -882,12 +1087,14 @@ public class TabGenerator {
 																							// "|" as well as the next
 																							// output
 							System.out.print(bRecord.get(0));
+							print.append(bRecord.get(0));
 							writer.write(bRecord.get(0));
 						}
 						else if (multipleMeasureBreak == true && bRecord.get(1) != "|") { // if the previous output was
 																							// "|" but not the next
 																							// output
 							System.out.print(bRecord.get(0) + "-");
+							print.append(bRecord.get(0) + "-");
 							writer.write(bRecord.get(0) + "-");
 							multipleMeasureBreak = false;
 							outputCharacterCount += 1; // increase outputCharacterCount by 1 to account for separating
@@ -895,6 +1102,7 @@ public class TabGenerator {
 						}
 						else {
 							System.out.print("-" + bRecord.get(0) + "-");
+							print.append("-" + bRecord.get(0) + "-");
 							writer.write("-" + bRecord.get(0) + "-");
 							outputCharacterCount += 2; // increase outputCharacterCount by 2 to account for separating
 														// dashes
@@ -906,12 +1114,15 @@ public class TabGenerator {
 						break;
 					}
 				}
+				
 				System.out.print("\n" + tunedStrings.get(2) + ": ");
+				print.append("\n" + tunedStrings.get(2) + ": ");
 				writer.write("\n" + tunedStrings.get(2) + ": ");
 				for (int outputCharacterCount = 0; outputCharacterCount < outputRowLength;) {
 					if (!gRecord.isEmpty()) {
 						if (multipleMeasureBreak == false && gRecord.get(0) == "|" && gRecord.get(1) == "|") {
 							System.out.print("-" + gRecord.get(0));
+							print.append("-" + gRecord.get(0));
 							writer.write("-" + gRecord.get(0));
 							multipleMeasureBreak = true;
 							outputCharacterCount += 1; // increase outputCharacterCount by 1 to account for separating
@@ -921,12 +1132,14 @@ public class TabGenerator {
 																							// "|" as well as the next
 																							// output
 							System.out.print(gRecord.get(0));
+							print.append(gRecord.get(0));
 							writer.write(gRecord.get(0));
 						}
 						else if (multipleMeasureBreak == true && gRecord.get(1) != "|") { // if the previous output was
 																							// "|" but not the next
 																							// output
 							System.out.print(gRecord.get(0) + "-");
+							print.append(gRecord.get(0) + "-");
 							writer.write(gRecord.get(0) + "-");
 							multipleMeasureBreak = false;
 							outputCharacterCount += 1; // increase outputCharacterCount by 1 to account for separating
@@ -934,6 +1147,7 @@ public class TabGenerator {
 						}
 						else {
 							System.out.print("-" + gRecord.get(0) + "-");
+							print.append("-" + gRecord.get(0) + "-");
 							writer.write("-" + gRecord.get(0) + "-");
 							outputCharacterCount += 2; // increase outputCharacterCount by 2 to account for separating
 														// dashes
@@ -946,11 +1160,13 @@ public class TabGenerator {
 					}
 				}
 				System.out.print("\n" + tunedStrings.get(3) + ": ");
+				print.append("\n" + tunedStrings.get(3) + ": ");
 				writer.write("\n" + tunedStrings.get(3) + ": ");
 				for (int outputCharacterCount = 0; outputCharacterCount < outputRowLength;) {
 					if (!dRecord.isEmpty()) {
 						if (multipleMeasureBreak == false && dRecord.get(0) == "|" && dRecord.get(1) == "|") {
 							System.out.print("-" + dRecord.get(0));
+							print.append("-" + dRecord.get(0));
 							writer.write("-" + dRecord.get(0));
 							multipleMeasureBreak = true;
 							outputCharacterCount += 1; // increase outputCharacterCount by 1 to account for separating
@@ -960,12 +1176,14 @@ public class TabGenerator {
 																							// "|" as well as the next
 																							// output
 							System.out.print(dRecord.get(0));
+							print.append(dRecord.get(0));
 							writer.write(dRecord.get(0));
 						}
 						else if (multipleMeasureBreak == true && dRecord.get(1) != "|") { // if the previous output was
 																							// "|" but not the next
 																							// output
 							System.out.print(dRecord.get(0) + "-");
+							print.append(dRecord.get(0) + "-");
 							writer.write(dRecord.get(0) + "-");
 							multipleMeasureBreak = false;
 							outputCharacterCount += 1; // increase outputCharacterCount by 1 to account for separating
@@ -973,6 +1191,7 @@ public class TabGenerator {
 						}
 						else {
 							System.out.print("-" + dRecord.get(0) + "-");
+							print.append("-" + dRecord.get(0) + "-");
 							writer.write("-" + dRecord.get(0) + "-");
 							outputCharacterCount += 2; // increase outputCharacterCount by 2 to account for separating
 														// dashes
@@ -985,11 +1204,13 @@ public class TabGenerator {
 					}
 				}
 				System.out.print("\n" + tunedStrings.get(4) + ": ");
+				print.append("\n" + tunedStrings.get(4) + ": ");
 				writer.write("\n" + tunedStrings.get(4) + ": ");
 				for (int outputCharacterCount = 0; outputCharacterCount < outputRowLength;) {
 					if (!aRecord.isEmpty()) {
 						if (multipleMeasureBreak == false && aRecord.get(0) == "|" && aRecord.get(1) == "|") {
 							System.out.print("-" + aRecord.get(0));
+							print.append("-" + aRecord.get(0));
 							writer.write("-" + aRecord.get(0));
 							multipleMeasureBreak = true;
 							outputCharacterCount += 1; // increase outputCharacterCount by 1 to account for separating
@@ -999,12 +1220,14 @@ public class TabGenerator {
 																							// "|" as well as the next
 																							// output
 							System.out.print(aRecord.get(0));
+							print.append(aRecord.get(0));
 							writer.write(aRecord.get(0));
 						}
 						else if (multipleMeasureBreak == true && aRecord.get(1) != "|") { // if the previous output was
 																							// "|" but not the next
 																							// output
 							System.out.print(aRecord.get(0) + "-");
+							print.append(aRecord.get(0) + "-");
 							writer.write(aRecord.get(0) + "-");
 							multipleMeasureBreak = false;
 							outputCharacterCount += 1; // increase outputCharacterCount by 1 to account for separating
@@ -1012,6 +1235,7 @@ public class TabGenerator {
 						}
 						else {
 							System.out.print("-" + aRecord.get(0) + "-");
+							print.append("-" + aRecord.get(0) + "-");
 							writer.write("-" + aRecord.get(0) + "-");
 							outputCharacterCount += 2; // increase outputCharacterCount by 2 to account for separating
 														// dashes
@@ -1024,11 +1248,13 @@ public class TabGenerator {
 					}
 				}
 				System.out.print("\n" + tunedStrings.get(5) + ": ");
+				print.append("\n" + tunedStrings.get(5) + ": ");
 				writer.write("\n" + tunedStrings.get(5) + ": ");
 				for (int outputCharacterCount = 0; outputCharacterCount < outputRowLength;) {
 					if (!elowRecord.isEmpty()) {
 						if (multipleMeasureBreak == false && elowRecord.get(0) == "|" && elowRecord.get(1) == "|") {
 							System.out.print("-" + elowRecord.get(0));
+							print.append("-" + elowRecord.get(0));
 							writer.write("-" + elowRecord.get(0));
 							multipleMeasureBreak = true;
 							outputCharacterCount += 1; // increase outputCharacterCount by 1 to account for separating
@@ -1038,12 +1264,14 @@ public class TabGenerator {
 																								// was "|" as well as
 																								// the next output
 							System.out.print(elowRecord.get(0));
+							print.append(elowRecord.get(0));
 							writer.write(elowRecord.get(0));
 						}
 						else if (multipleMeasureBreak == true && elowRecord.get(1) != "|") { // if the previous output
 																								// was "|" but not the
 																								// next output
 							System.out.print(elowRecord.get(0) + "-");
+							print.append(elowRecord.get(0) + "-");
 							writer.write(elowRecord.get(0) + "-");
 							multipleMeasureBreak = false;
 							outputCharacterCount += 1; // increase outputCharacterCount by 1 to account for separating
@@ -1051,6 +1279,7 @@ public class TabGenerator {
 						}
 						else {
 							System.out.print("-" + elowRecord.get(0) + "-");
+							print.append("-" + elowRecord.get(0) + "-");
 							writer.write("-" + elowRecord.get(0) + "-");
 							outputCharacterCount += 2; // increase outputCharacterCount by 2 to account for separating
 														// dashes
@@ -1066,6 +1295,7 @@ public class TabGenerator {
 				// output two new lines
 				System.out.println();
 				System.out.println();
+				print.append("\n\n");
 				writer.newLine();
 				writer.newLine();
 			}
@@ -1078,5 +1308,13 @@ public class TabGenerator {
 			e.printStackTrace();
 		}
 
+	}
+	
+	public static StringBuilder getSB() {
+		return print;
+	}
+	
+	public static StringBuilder checkForErrors() {
+		return message;
 	}
 }
