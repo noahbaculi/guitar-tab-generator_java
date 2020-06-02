@@ -110,9 +110,6 @@ public class TabGenerator {
 
 		// TODO create 'main' method to improve usability
 		
-		print = new StringBuilder();
-		print.setLength(0);
-		
 		// To handle errors (See checkForErrors method below
 		errNo = 0;
 		message = new StringBuilder();
@@ -987,7 +984,10 @@ public class TabGenerator {
 		lastFret = chordMatrix[bestChordIndex][chordNotes.size() + 1];
 	}
 
-	protected static void outputTabToFile() {
+	public static void outputTabToFile() {
+		
+		print = new StringBuilder();
+		print.setLength(0);
 
 		String tranposeFileNameMod = "";
 		if (transpose != 0) {
@@ -1023,16 +1023,17 @@ public class TabGenerator {
 
 			//System.out.println();
 
-			int outputRowLength = 60;
+//			int outputRowLength = 60;
+			int outputRowLength = GuitarGUI.rowLength;
 			boolean multipleMeasureBreak = false;
 			while (!ehighRecord.isEmpty()) {
-				System.out.print(tunedStrings.get(0) + ": ");
+				//System.out.print(tunedStrings.get(0) + ": ");
 				print.append(tunedStrings.get(0) + ": ");
 				writer.write(tunedStrings.get(0) + ": ");
 				for (int outputCharacterCount = 0; outputCharacterCount < outputRowLength;) {
 					if (!ehighRecord.isEmpty()) {
 						if (multipleMeasureBreak == false && ehighRecord.get(0) == "|" && ehighRecord.get(1) == "|") {
-							System.out.print("-" + ehighRecord.get(0));
+							//System.out.print("-" + ehighRecord.get(0));
 							print.append("-" + ehighRecord.get(0));
 							writer.write("-" + ehighRecord.get(0));
 							multipleMeasureBreak = true;
@@ -1042,14 +1043,14 @@ public class TabGenerator {
 						else if (multipleMeasureBreak == true && ehighRecord.get(1) == "|") { // if the previous output
 																								// was "|" as well as
 																								// the next output
-							System.out.print(ehighRecord.get(0));
+							//System.out.print(ehighRecord.get(0));
 							print.append(ehighRecord.get(0));
 							writer.write(ehighRecord.get(0));
 						}
 						else if (multipleMeasureBreak == true && ehighRecord.get(1) != "|") { // if the previous output
 																								// was "|" but not the
 																								// next output
-							System.out.print(ehighRecord.get(0) + "-");
+							//System.out.print(ehighRecord.get(0) + "-");
 							print.append(ehighRecord.get(0) + "-");
 							writer.write(ehighRecord.get(0) + "-");
 							multipleMeasureBreak = false;
@@ -1057,7 +1058,7 @@ public class TabGenerator {
 														// dash
 						}
 						else {
-							System.out.print("-" + ehighRecord.get(0) + "-");
+							//System.out.print("-" + ehighRecord.get(0) + "-");
 							print.append("-" + ehighRecord.get(0) + "-");
 							writer.write("-" + ehighRecord.get(0) + "-");
 							outputCharacterCount += 2; // increase outputCharacterCount by 2 to account for separating
@@ -1070,13 +1071,13 @@ public class TabGenerator {
 						break;
 					}
 				}
-				System.out.print("\n" + tunedStrings.get(1) + ": ");
+				//System.out.print("\n" + tunedStrings.get(1) + ": ");
 				print.append("\n" + tunedStrings.get(1) + ": ");
 				writer.write("\n" + tunedStrings.get(1) + ": ");
 				for (int outputCharacterCount = 0; outputCharacterCount < outputRowLength;) {
 					if (!bRecord.isEmpty()) {
 						if (multipleMeasureBreak == false && bRecord.get(0) == "|" && bRecord.get(1) == "|") {
-							System.out.print("-" + bRecord.get(0));
+							//System.out.print("-" + bRecord.get(0));
 							print.append("-" + bRecord.get(0));
 							writer.write("-" + bRecord.get(0));
 							multipleMeasureBreak = true;
@@ -1086,14 +1087,14 @@ public class TabGenerator {
 						else if (multipleMeasureBreak == true && bRecord.get(1) == "|") { // if the previous output was
 																							// "|" as well as the next
 																							// output
-							System.out.print(bRecord.get(0));
+							//System.out.print(bRecord.get(0));
 							print.append(bRecord.get(0));
 							writer.write(bRecord.get(0));
 						}
 						else if (multipleMeasureBreak == true && bRecord.get(1) != "|") { // if the previous output was
 																							// "|" but not the next
 																							// output
-							System.out.print(bRecord.get(0) + "-");
+							//System.out.print(bRecord.get(0) + "-");
 							print.append(bRecord.get(0) + "-");
 							writer.write(bRecord.get(0) + "-");
 							multipleMeasureBreak = false;
@@ -1101,7 +1102,7 @@ public class TabGenerator {
 														// dash
 						}
 						else {
-							System.out.print("-" + bRecord.get(0) + "-");
+							//System.out.print("-" + bRecord.get(0) + "-");
 							print.append("-" + bRecord.get(0) + "-");
 							writer.write("-" + bRecord.get(0) + "-");
 							outputCharacterCount += 2; // increase outputCharacterCount by 2 to account for separating
@@ -1115,13 +1116,13 @@ public class TabGenerator {
 					}
 				}
 				
-				System.out.print("\n" + tunedStrings.get(2) + ": ");
+				//System.out.print("\n" + tunedStrings.get(2) + ": ");
 				print.append("\n" + tunedStrings.get(2) + ": ");
 				writer.write("\n" + tunedStrings.get(2) + ": ");
 				for (int outputCharacterCount = 0; outputCharacterCount < outputRowLength;) {
 					if (!gRecord.isEmpty()) {
 						if (multipleMeasureBreak == false && gRecord.get(0) == "|" && gRecord.get(1) == "|") {
-							System.out.print("-" + gRecord.get(0));
+							//System.out.print("-" + gRecord.get(0));
 							print.append("-" + gRecord.get(0));
 							writer.write("-" + gRecord.get(0));
 							multipleMeasureBreak = true;
@@ -1131,14 +1132,14 @@ public class TabGenerator {
 						else if (multipleMeasureBreak == true && gRecord.get(1) == "|") { // if the previous output was
 																							// "|" as well as the next
 																							// output
-							System.out.print(gRecord.get(0));
+							//System.out.print(gRecord.get(0));
 							print.append(gRecord.get(0));
 							writer.write(gRecord.get(0));
 						}
 						else if (multipleMeasureBreak == true && gRecord.get(1) != "|") { // if the previous output was
 																							// "|" but not the next
 																							// output
-							System.out.print(gRecord.get(0) + "-");
+							//System.out.print(gRecord.get(0) + "-");
 							print.append(gRecord.get(0) + "-");
 							writer.write(gRecord.get(0) + "-");
 							multipleMeasureBreak = false;
@@ -1146,7 +1147,7 @@ public class TabGenerator {
 														// dash
 						}
 						else {
-							System.out.print("-" + gRecord.get(0) + "-");
+							//System.out.print("-" + gRecord.get(0) + "-");
 							print.append("-" + gRecord.get(0) + "-");
 							writer.write("-" + gRecord.get(0) + "-");
 							outputCharacterCount += 2; // increase outputCharacterCount by 2 to account for separating
@@ -1159,13 +1160,13 @@ public class TabGenerator {
 						break;
 					}
 				}
-				System.out.print("\n" + tunedStrings.get(3) + ": ");
+				//System.out.print("\n" + tunedStrings.get(3) + ": ");
 				print.append("\n" + tunedStrings.get(3) + ": ");
 				writer.write("\n" + tunedStrings.get(3) + ": ");
 				for (int outputCharacterCount = 0; outputCharacterCount < outputRowLength;) {
 					if (!dRecord.isEmpty()) {
 						if (multipleMeasureBreak == false && dRecord.get(0) == "|" && dRecord.get(1) == "|") {
-							System.out.print("-" + dRecord.get(0));
+							//System.out.print("-" + dRecord.get(0));
 							print.append("-" + dRecord.get(0));
 							writer.write("-" + dRecord.get(0));
 							multipleMeasureBreak = true;
@@ -1175,14 +1176,14 @@ public class TabGenerator {
 						else if (multipleMeasureBreak == true && dRecord.get(1) == "|") { // if the previous output was
 																							// "|" as well as the next
 																							// output
-							System.out.print(dRecord.get(0));
+							//System.out.print(dRecord.get(0));
 							print.append(dRecord.get(0));
 							writer.write(dRecord.get(0));
 						}
 						else if (multipleMeasureBreak == true && dRecord.get(1) != "|") { // if the previous output was
 																							// "|" but not the next
 																							// output
-							System.out.print(dRecord.get(0) + "-");
+							//System.out.print(dRecord.get(0) + "-");
 							print.append(dRecord.get(0) + "-");
 							writer.write(dRecord.get(0) + "-");
 							multipleMeasureBreak = false;
@@ -1190,7 +1191,7 @@ public class TabGenerator {
 														// dash
 						}
 						else {
-							System.out.print("-" + dRecord.get(0) + "-");
+							//System.out.print("-" + dRecord.get(0) + "-");
 							print.append("-" + dRecord.get(0) + "-");
 							writer.write("-" + dRecord.get(0) + "-");
 							outputCharacterCount += 2; // increase outputCharacterCount by 2 to account for separating
@@ -1203,13 +1204,13 @@ public class TabGenerator {
 						break;
 					}
 				}
-				System.out.print("\n" + tunedStrings.get(4) + ": ");
+				//System.out.print("\n" + tunedStrings.get(4) + ": ");
 				print.append("\n" + tunedStrings.get(4) + ": ");
 				writer.write("\n" + tunedStrings.get(4) + ": ");
 				for (int outputCharacterCount = 0; outputCharacterCount < outputRowLength;) {
 					if (!aRecord.isEmpty()) {
 						if (multipleMeasureBreak == false && aRecord.get(0) == "|" && aRecord.get(1) == "|") {
-							System.out.print("-" + aRecord.get(0));
+							//System.out.print("-" + aRecord.get(0));
 							print.append("-" + aRecord.get(0));
 							writer.write("-" + aRecord.get(0));
 							multipleMeasureBreak = true;
@@ -1219,14 +1220,14 @@ public class TabGenerator {
 						else if (multipleMeasureBreak == true && aRecord.get(1) == "|") { // if the previous output was
 																							// "|" as well as the next
 																							// output
-							System.out.print(aRecord.get(0));
+							//System.out.print(aRecord.get(0));
 							print.append(aRecord.get(0));
 							writer.write(aRecord.get(0));
 						}
 						else if (multipleMeasureBreak == true && aRecord.get(1) != "|") { // if the previous output was
 																							// "|" but not the next
 																							// output
-							System.out.print(aRecord.get(0) + "-");
+							//System.out.print(aRecord.get(0) + "-");
 							print.append(aRecord.get(0) + "-");
 							writer.write(aRecord.get(0) + "-");
 							multipleMeasureBreak = false;
@@ -1234,7 +1235,7 @@ public class TabGenerator {
 														// dash
 						}
 						else {
-							System.out.print("-" + aRecord.get(0) + "-");
+							//System.out.print("-" + aRecord.get(0) + "-");
 							print.append("-" + aRecord.get(0) + "-");
 							writer.write("-" + aRecord.get(0) + "-");
 							outputCharacterCount += 2; // increase outputCharacterCount by 2 to account for separating
@@ -1247,13 +1248,13 @@ public class TabGenerator {
 						break;
 					}
 				}
-				System.out.print("\n" + tunedStrings.get(5) + ": ");
+				//System.out.print("\n" + tunedStrings.get(5) + ": ");
 				print.append("\n" + tunedStrings.get(5) + ": ");
 				writer.write("\n" + tunedStrings.get(5) + ": ");
 				for (int outputCharacterCount = 0; outputCharacterCount < outputRowLength;) {
 					if (!elowRecord.isEmpty()) {
 						if (multipleMeasureBreak == false && elowRecord.get(0) == "|" && elowRecord.get(1) == "|") {
-							System.out.print("-" + elowRecord.get(0));
+							//System.out.print("-" + elowRecord.get(0));
 							print.append("-" + elowRecord.get(0));
 							writer.write("-" + elowRecord.get(0));
 							multipleMeasureBreak = true;
@@ -1263,14 +1264,14 @@ public class TabGenerator {
 						else if (multipleMeasureBreak == true && elowRecord.get(1) == "|") { // if the previous output
 																								// was "|" as well as
 																								// the next output
-							System.out.print(elowRecord.get(0));
+							//System.out.print(elowRecord.get(0));
 							print.append(elowRecord.get(0));
 							writer.write(elowRecord.get(0));
 						}
 						else if (multipleMeasureBreak == true && elowRecord.get(1) != "|") { // if the previous output
 																								// was "|" but not the
 																								// next output
-							System.out.print(elowRecord.get(0) + "-");
+							//System.out.print(elowRecord.get(0) + "-");
 							print.append(elowRecord.get(0) + "-");
 							writer.write(elowRecord.get(0) + "-");
 							multipleMeasureBreak = false;
@@ -1278,7 +1279,7 @@ public class TabGenerator {
 														// dash
 						}
 						else {
-							System.out.print("-" + elowRecord.get(0) + "-");
+							//System.out.print("-" + elowRecord.get(0) + "-");
 							print.append("-" + elowRecord.get(0) + "-");
 							writer.write("-" + elowRecord.get(0) + "-");
 							outputCharacterCount += 2; // increase outputCharacterCount by 2 to account for separating
@@ -1293,14 +1294,14 @@ public class TabGenerator {
 				}
 
 				// output two new lines
-				System.out.println();
-				System.out.println();
+				//System.out.println();
+				//System.out.println();
 				print.append("\n\n");
 				writer.newLine();
 				writer.newLine();
 			}
 
-			System.out.println();
+			//System.out.println();
 
 			writer.close();
 		}

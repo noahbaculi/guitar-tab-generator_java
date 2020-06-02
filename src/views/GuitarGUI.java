@@ -20,6 +20,8 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.SpinnerNumberModel;
+
 import java.awt.ScrollPane;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.DefaultCaret;
@@ -54,6 +56,14 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import java.awt.Component;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.JSlider;
+import javax.swing.JSpinner;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ChangeEvent;
 
 public class GuitarGUI extends JFrame {
 
@@ -73,6 +83,11 @@ public class GuitarGUI extends JFrame {
 	private JMenuBar menuBar;
 	private JMenu mnHelp;
 	private JMenuItem mntmGuide;
+	private JPopupMenu popupMenu;
+	private JMenuItem mntmClearAll;
+	private JSlider sldrRowLength;
+	private JSpinner spnrRowLength;
+	public static int rowLength = 60;
 
 	/**
 	 * Launch the application.
@@ -198,6 +213,27 @@ public class GuitarGUI extends JFrame {
 		btnSave = new JButton("Save File");
 		btnSave.setEnabled(false);
 		
+		// Create label to change output row length
+		JLabel lblRowLength = new JLabel("Change row length:");
+		
+		// Create slider to change output row length
+		sldrRowLength = new JSlider();
+		sldrRowLength.setPaintTicks(true);
+		sldrRowLength.setValue(60);
+		sldrRowLength.setMinorTickSpacing(50);
+		sldrRowLength.setMaximum(1000);
+		sldrRowLength.setMinimum(10);
+		
+		// No user interaction can be done yet
+		sldrRowLength.setEnabled(false);
+		
+		// Create spinner to change output row length
+		spnrRowLength = new JSpinner();
+		spnrRowLength.setModel(new SpinnerNumberModel(60, 10, 1000, 1));
+		
+		// No user interaction can be done yet
+		spnrRowLength.setEnabled(false);
+		
 		// Set content pane layout to Group Layout
 		GroupLayout gl_ctpMain = new GroupLayout(ctpMain);
 		gl_ctpMain.setHorizontalGroup(
@@ -205,9 +241,9 @@ public class GuitarGUI extends JFrame {
 				.addGroup(gl_ctpMain.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_ctpMain.createParallelGroup(Alignment.LEADING)
-						.addComponent(spLoaded, GroupLayout.DEFAULT_SIZE, 255, Short.MAX_VALUE)
-						.addComponent(cbTuning, 0, 255, Short.MAX_VALUE)
-						.addComponent(pnlLoadFile, GroupLayout.DEFAULT_SIZE, 255, Short.MAX_VALUE)
+						.addComponent(spLoaded, GroupLayout.DEFAULT_SIZE, 264, Short.MAX_VALUE)
+						.addComponent(cbTuning, 0, 264, Short.MAX_VALUE)
+						.addComponent(pnlLoadFile, GroupLayout.DEFAULT_SIZE, 264, Short.MAX_VALUE)
 						.addComponent(btnGenerateTab, Alignment.TRAILING)
 						.addGroup(gl_ctpMain.createSequentialGroup()
 							.addGap(6)
@@ -217,8 +253,15 @@ public class GuitarGUI extends JFrame {
 							.addComponent(lblFilePreview)))
 					.addGap(18)
 					.addGroup(gl_ctpMain.createParallelGroup(Alignment.TRAILING)
-						.addComponent(spGenerated, GroupLayout.DEFAULT_SIZE, 499, Short.MAX_VALUE)
-						.addComponent(btnSave))
+						.addComponent(spGenerated, GroupLayout.DEFAULT_SIZE, 537, Short.MAX_VALUE)
+						.addGroup(gl_ctpMain.createSequentialGroup()
+							.addComponent(lblRowLength)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(sldrRowLength, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(spnrRowLength, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED, 66, Short.MAX_VALUE)
+							.addComponent(btnSave)))
 					.addGap(12))
 		);
 		gl_ctpMain.setVerticalGroup(
@@ -226,21 +269,25 @@ public class GuitarGUI extends JFrame {
 				.addGroup(gl_ctpMain.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_ctpMain.createParallelGroup(Alignment.TRAILING)
-						.addComponent(spGenerated, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 421, Short.MAX_VALUE)
+						.addComponent(spGenerated, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
 						.addGroup(gl_ctpMain.createSequentialGroup()
 							.addComponent(pnlLoadFile, GroupLayout.PREFERRED_SIZE, 104, GroupLayout.PREFERRED_SIZE)
 							.addGap(4)
 							.addComponent(lblFilePreview)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(spLoaded, GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
+							.addComponent(spLoaded, GroupLayout.DEFAULT_SIZE, 191, Short.MAX_VALUE)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(lblSelectTheGuitar)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(cbTuning, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_ctpMain.createParallelGroup(Alignment.BASELINE)
-						.addComponent(btnGenerateTab)
-						.addComponent(btnSave))
+					.addGroup(gl_ctpMain.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_ctpMain.createParallelGroup(Alignment.BASELINE)
+							.addComponent(btnGenerateTab)
+							.addComponent(btnSave)
+							.addComponent(lblRowLength)
+							.addComponent(spnrRowLength, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addComponent(sldrRowLength, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addContainerGap())
 		);
 		
@@ -256,6 +303,15 @@ public class GuitarGUI extends JFrame {
 		taGeneratedFile = new JTextArea();
 		spGenerated.setViewportView(taGeneratedFile);
 		taLoadedFile.setEditable(false);
+		
+		// Create menu when user right clicks
+		popupMenu = new JPopupMenu();
+		addPopup(taLoadedFile, popupMenu);
+		
+		// Create menu item to clear Loaded text area
+		mntmClearAll = new JMenuItem("Clear All");
+		
+		popupMenu.add(mntmClearAll);
 	}
 
 	// This method contains all of the code for creating events
@@ -287,6 +343,15 @@ public class GuitarGUI extends JFrame {
 						
 						// Clear generated text area
 						taGeneratedFile.setText("");
+						
+						// Disable Save button
+						btnSave.setEnabled(false);
+						
+						// Slider user interaction not allowed
+						sldrRowLength.setEnabled(false);
+						
+						// Spinner user interaction not allowed
+						spnrRowLength.setEnabled(false);
 					}
 					
 					// Save file name
@@ -306,10 +371,14 @@ public class GuitarGUI extends JFrame {
 						taLoadedFile.setText("");
 						
 						// Include guidelines for file creation
-						taLoadedFile.append("[Enter song name here]\n\n[Enter notes here]");
+						taLoadedFile.append("For instructions on creating and editing a\nfile, go to \"Help\" > \"Guitar Tab Generator\nGuide\" on the menu bar.\n");
+						taLoadedFile.append("\nTo clear this text, right click and select\n\"Clear All\"");
 						
 						// Clear generated text area
 						taGeneratedFile.setText("");
+						
+						// Disable Save button
+						btnSave.setEnabled(false);
 					}
 				}
 				
@@ -325,10 +394,10 @@ public class GuitarGUI extends JFrame {
 				if (taLoadedFile.getText().equals("No file was selected.")) {
 					btnGenerateTab.setEnabled(false);
 					taLoadedFile.setEditable(false);
+					
+					// Disable Save button
+					btnSave.setEnabled(false);
 				}
-				
-				// Disable Save button
-				btnSave.setEnabled(false);
 			}
 		});
 		
@@ -365,6 +434,13 @@ public class GuitarGUI extends JFrame {
 					// Scroll up
 					taGeneratedFile.setCaretPosition(0);
 					
+					// Slider user interaction allowed
+					sldrRowLength.setEnabled(true);
+					
+					// Spinner user interaction allowed
+					spnrRowLength.setEnabled(true);
+					
+					// Enable save button
 					btnSave.setEnabled(true);
 				}
 			}
@@ -393,6 +469,65 @@ public class GuitarGUI extends JFrame {
 			}
 		});
 		
+		// Right click menu event handler
+		mntmClearAll.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// Clear text in loaded text area
+				taLoadedFile.setText("");
+				
+				// Clear and disable everything on the right side of window
+				taGeneratedFile.setText("");
+				btnSave.setEnabled(false);
+			}
+		});
+		
+		// Slider event handler
+		sldrRowLength.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				// Update spinner
+				spnrRowLength.setValue(sldrRowLength.getValue());
+				
+				// Assign new row length
+				rowLength = (int) spnrRowLength.getValue();
+				
+				// Call main method
+				TabGenerator.main(null);
+				
+				// Extract string to print
+				StringBuilder print = TabGenerator.getSB();
+				
+				// Display in text area
+				taGeneratedFile.setText(print.toString());
+				
+				// Scroll up
+				taGeneratedFile.setCaretPosition(0);
+			}
+		});
+		
+		// Spinner event handler
+		spnrRowLength.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				// Update slider
+				sldrRowLength.setValue((int)spnrRowLength.getValue());
+				
+				// Assign new row length
+				rowLength = (int) spnrRowLength.getValue();
+				
+				// Call main method
+				TabGenerator.main(null);
+				
+				// Extract string to print
+				StringBuilder print = TabGenerator.getSB();
+				
+				// Display in text area
+				taGeneratedFile.setText(print.toString());
+				
+				// Scroll up
+				taGeneratedFile.setCaretPosition(0);
+			}
+		});
+		
+		// Window event handler - used to confirm program termination
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
@@ -405,6 +540,23 @@ public class GuitarGUI extends JFrame {
 			      e.getWindow().dispose();
 			    }
 			  }
+		});
+	}
+	private static void addPopup(Component component, final JPopupMenu popup) {
+		component.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					showMenu(e);
+				}
+			}
+			public void mouseReleased(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					showMenu(e);
+				}
+			}
+			private void showMenu(MouseEvent e) {
+				popup.show(e.getComponent(), e.getX(), e.getY());
+			}
 		});
 	}
 }
