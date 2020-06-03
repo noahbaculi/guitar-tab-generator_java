@@ -64,6 +64,8 @@ import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
+import javax.swing.UIManager;
+import javax.swing.JCheckBox;
 
 public class GuitarGUI extends JFrame {
 
@@ -88,6 +90,12 @@ public class GuitarGUI extends JFrame {
 	private JSlider sldrRowLength;
 	private JSpinner spnrRowLength;
 	public static int rowLength = 60;
+	private JLabel lblFilePreview;
+	private JLabel lblSelectTheGuitar;
+	private JLabel lblRowLength;
+	private JCheckBox chkDefault;
+	private JMenu mnGuitarTabGenerator;
+	private JMenuItem mntmAboutGuitarTab;
 
 	/**
 	 * Launch the application.
@@ -113,7 +121,7 @@ public class GuitarGUI extends JFrame {
 	 * Create the frame.
 	 */
 	public GuitarGUI() {
-		setMinimumSize(new Dimension(847, 500));
+		setMinimumSize(new Dimension(805, 500));
 		initComponents();
 		createEvents();
 	}
@@ -128,19 +136,28 @@ public class GuitarGUI extends JFrame {
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		
 		// Set GUI bounds (size)
-		setBounds(100, 100, 847, 500);
+		setBounds(100, 100, 805, 500);
 		
 		// Add a menu bar
 		menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
+		
+		// Add menu for project information
+		mnGuitarTabGenerator = new JMenu("Guitar Tab Generator");
+		menuBar.add(mnGuitarTabGenerator);
+		
+		// Add menu item for the about window
+		mntmAboutGuitarTab = new JMenuItem("About Guitar Tab Generator");
+		mntmAboutGuitarTab.setIcon(new ImageIcon(GuitarGUI.class.getResource("/resources/guitar_16.png")));
+		mnGuitarTabGenerator.add(mntmAboutGuitarTab);
 		
 		// Add a menu
 		mnHelp = new JMenu("Help");
 		menuBar.add(mnHelp);
 		
 		// Add a menu item to help user
-		mntmGuide = new JMenuItem("Guitar Tab Generator Guide");
-		mntmGuide.setIcon(new ImageIcon(GuitarGUI.class.getResource("/resources/help_16.png")));
+		mntmGuide = new JMenuItem("Guide");
+		mntmGuide.setIcon(new ImageIcon(GuitarGUI.class.getResource("/resources/guide_16.png")));
 		mnHelp.add(mntmGuide);
 		
 		// Create main content pane
@@ -202,19 +219,26 @@ public class GuitarGUI extends JFrame {
 		// Create scroll pane for loaded file
 		JScrollPane spLoaded = new JScrollPane();
 		
+		// Create combo box for tuning selection
 		cbTuning = new JComboBox<String>();
 		cbTuning.setModel(new DefaultComboBoxModel<String>(new String[] {"Standard", "Open G", "Open D", "C6", "Dsus4"}));
+		cbTuning.setEnabled(false);
 		
-		JLabel lblSelectTheGuitar = new JLabel("Select the guitar tuning:");
+		// Create label to select tuning
+		lblSelectTheGuitar = new JLabel("Select the guitar tuning:");
+		lblSelectTheGuitar.setForeground(UIManager.getColor("Label.disabledForeground"));
 		
-		JLabel lblFilePreview = new JLabel("File Preview:");
+		// Create label to signify file preview
+		lblFilePreview = new JLabel("File Preview:");
+		lblFilePreview.setForeground(UIManager.getColor("Label.disabledForeground"));
 		
 		// Add button to save tab as file
 		btnSave = new JButton("Save File");
 		btnSave.setEnabled(false);
 		
 		// Create label to change output row length
-		JLabel lblRowLength = new JLabel("Change row length:");
+		lblRowLength = new JLabel("Change row length:");
+		lblRowLength.setForeground(UIManager.getColor("Label.disabledForeground"));
 		
 		// Create slider to change output row length
 		sldrRowLength = new JSlider();
@@ -224,15 +248,22 @@ public class GuitarGUI extends JFrame {
 		sldrRowLength.setMaximum(1000);
 		sldrRowLength.setMinimum(10);
 		
-		// No user interaction can be done yet
+		// Slider user interaction not allowed
 		sldrRowLength.setEnabled(false);
 		
 		// Create spinner to change output row length
 		spnrRowLength = new JSpinner();
 		spnrRowLength.setModel(new SpinnerNumberModel(60, 10, 1000, 1));
 		
-		// No user interaction can be done yet
+		// Spinner user interaction not allowed
 		spnrRowLength.setEnabled(false);
+		
+		// Create check box to revert to default row output
+		chkDefault = new JCheckBox("Default");
+		chkDefault.setSelected(true);
+		
+		// Check box user interaction not allowed
+		chkDefault.setEnabled(false);
 		
 		// Set content pane layout to Group Layout
 		GroupLayout gl_ctpMain = new GroupLayout(ctpMain);
@@ -241,53 +272,64 @@ public class GuitarGUI extends JFrame {
 				.addGroup(gl_ctpMain.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_ctpMain.createParallelGroup(Alignment.LEADING)
-						.addComponent(spLoaded, GroupLayout.DEFAULT_SIZE, 264, Short.MAX_VALUE)
-						.addComponent(cbTuning, 0, 264, Short.MAX_VALUE)
-						.addComponent(pnlLoadFile, GroupLayout.DEFAULT_SIZE, 264, Short.MAX_VALUE)
-						.addComponent(btnGenerateTab, Alignment.TRAILING)
 						.addGroup(gl_ctpMain.createSequentialGroup()
-							.addGap(6)
-							.addComponent(lblSelectTheGuitar))
+							.addGroup(gl_ctpMain.createParallelGroup(Alignment.LEADING)
+								.addComponent(spLoaded, GroupLayout.DEFAULT_SIZE, 241, Short.MAX_VALUE)
+								.addComponent(cbTuning, 0, 241, Short.MAX_VALUE)
+								.addComponent(pnlLoadFile, GroupLayout.DEFAULT_SIZE, 241, Short.MAX_VALUE)
+								.addGroup(gl_ctpMain.createSequentialGroup()
+									.addGap(6)
+									.addComponent(lblFilePreview))
+								.addComponent(btnGenerateTab, Alignment.TRAILING))
+							.addGap(18))
 						.addGroup(gl_ctpMain.createSequentialGroup()
-							.addGap(6)
-							.addComponent(lblFilePreview)))
-					.addGap(18)
-					.addGroup(gl_ctpMain.createParallelGroup(Alignment.TRAILING)
-						.addComponent(spGenerated, GroupLayout.DEFAULT_SIZE, 537, Short.MAX_VALUE)
+							.addComponent(lblSelectTheGuitar)
+							.addPreferredGap(ComponentPlacement.RELATED)))
+					.addGroup(gl_ctpMain.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_ctpMain.createSequentialGroup()
 							.addComponent(lblRowLength)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(sldrRowLength, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addComponent(sldrRowLength, GroupLayout.PREFERRED_SIZE, 196, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(spnrRowLength, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED, 66, Short.MAX_VALUE)
-							.addComponent(btnSave)))
-					.addGap(12))
+							.addGroup(gl_ctpMain.createParallelGroup(Alignment.LEADING)
+								.addGroup(gl_ctpMain.createSequentialGroup()
+									.addComponent(spnrRowLength, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(btnSave))
+								.addComponent(chkDefault)))
+						.addComponent(spGenerated, GroupLayout.DEFAULT_SIZE, 519, Short.MAX_VALUE))
+					.addContainerGap())
 		);
 		gl_ctpMain.setVerticalGroup(
 			gl_ctpMain.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_ctpMain.createSequentialGroup()
 					.addContainerGap()
-					.addGroup(gl_ctpMain.createParallelGroup(Alignment.TRAILING)
-						.addComponent(spGenerated, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
+					.addGroup(gl_ctpMain.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_ctpMain.createSequentialGroup()
 							.addComponent(pnlLoadFile, GroupLayout.PREFERRED_SIZE, 104, GroupLayout.PREFERRED_SIZE)
 							.addGap(4)
 							.addComponent(lblFilePreview)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(spLoaded, GroupLayout.DEFAULT_SIZE, 191, Short.MAX_VALUE)
+							.addComponent(spLoaded, GroupLayout.DEFAULT_SIZE, 214, Short.MAX_VALUE)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(lblSelectTheGuitar)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(cbTuning, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+							.addComponent(lblSelectTheGuitar))
+						.addComponent(spGenerated, GroupLayout.DEFAULT_SIZE, 366, Short.MAX_VALUE))
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_ctpMain.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_ctpMain.createParallelGroup(Alignment.BASELINE)
-							.addComponent(btnGenerateTab)
-							.addComponent(btnSave)
-							.addComponent(lblRowLength)
-							.addComponent(spnrRowLength, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-						.addComponent(sldrRowLength, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addGroup(gl_ctpMain.createParallelGroup(Alignment.TRAILING)
+						.addGroup(gl_ctpMain.createSequentialGroup()
+							.addComponent(cbTuning, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_ctpMain.createParallelGroup(Alignment.BASELINE)
+								.addComponent(btnGenerateTab)
+								.addComponent(chkDefault)))
+						.addGroup(gl_ctpMain.createSequentialGroup()
+							.addGroup(gl_ctpMain.createParallelGroup(Alignment.LEADING)
+								.addGroup(gl_ctpMain.createParallelGroup(Alignment.BASELINE)
+									.addComponent(lblRowLength)
+									.addComponent(btnSave)
+									.addComponent(spnrRowLength, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+								.addComponent(sldrRowLength, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							.addGap(20)))
 					.addContainerGap())
 		);
 		
@@ -341,17 +383,32 @@ public class GuitarGUI extends JFrame {
 						// Display in text area
 						taLoadedFile.setText(of.sb.toString());
 						
+						// Enable file preview label
+						lblFilePreview.setForeground(UIManager.getColor("Label.Foreground"));
+						
+						// Enable select tuning label
+						lblSelectTheGuitar.setForeground(UIManager.getColor("Label.Foreground"));
+						
+						// Enable combo box
+						cbTuning.setEnabled(true);
+						
 						// Clear generated text area
 						taGeneratedFile.setText("");
 						
 						// Disable Save button
 						btnSave.setEnabled(false);
 						
+						// Disable row length label
+						lblRowLength.setForeground(UIManager.getColor("Label.disabledForeground"));
+						
 						// Slider user interaction not allowed
 						sldrRowLength.setEnabled(false);
 						
 						// Spinner user interaction not allowed
 						spnrRowLength.setEnabled(false);
+						
+						// Check box user interaction not allowed
+						chkDefault.setEnabled(false);
 					}
 					
 					// Save file name
@@ -370,15 +427,40 @@ public class GuitarGUI extends JFrame {
 						// Clear loaded text area
 						taLoadedFile.setText("");
 						
+						// Allow for text wrap
+						taLoadedFile.setLineWrap(true);
+						taLoadedFile.setWrapStyleWord(true);
+						
 						// Include guidelines for file creation
-						taLoadedFile.append("For instructions on creating and editing a\nfile, go to \"Help\" > \"Guitar Tab Generator\nGuide\" on the menu bar.\n");
-						taLoadedFile.append("\nTo clear this text, right click and select\n\"Clear All\"");
+						taLoadedFile.append("For instructions on creating and editing a file, go to Help > Guide on the menu bar.\n");
+						taLoadedFile.append("\nTo clear this text, right click and select \"Clear All\"");
+						
+						// Enable file preview label
+						lblFilePreview.setForeground(UIManager.getColor("Label.Foreground"));
+						
+						// Enable select tuning label
+						lblSelectTheGuitar.setForeground(UIManager.getColor("Label.Foreground"));
+						
+						// Enable combo box
+						cbTuning.setEnabled(true);
 						
 						// Clear generated text area
-						taGeneratedFile.setText("");
+						taGeneratedFile.setText("test");
 						
 						// Disable Save button
 						btnSave.setEnabled(false);
+						
+						// Disable row length label
+						lblRowLength.setForeground(UIManager.getColor("Label.disabledForeground"));
+						
+						// Slider user interaction not allowed
+						sldrRowLength.setEnabled(false);
+						
+						// Spinner user interaction not allowed
+						spnrRowLength.setEnabled(false);
+						
+						// Check box user interaction not allowed
+						chkDefault.setEnabled(false);
 					}
 				}
 				
@@ -389,12 +471,15 @@ public class GuitarGUI extends JFrame {
 				if (fileName != null && !fileName.equals("")) {
 					btnGenerateTab.setEnabled(true);
 					taLoadedFile.setEditable(true);
+					// Clear generated text area
+					taGeneratedFile.setText("");
 				}
 				// Disable Generate button and deny user access to edit if no file was selected
 				if (taLoadedFile.getText().equals("No file was selected.")) {
 					btnGenerateTab.setEnabled(false);
 					taLoadedFile.setEditable(false);
-					
+					// Clear generated text area
+					taGeneratedFile.setText("");
 					// Disable Save button
 					btnSave.setEnabled(false);
 				}
@@ -434,11 +519,17 @@ public class GuitarGUI extends JFrame {
 					// Scroll up
 					taGeneratedFile.setCaretPosition(0);
 					
+					// Enable row length label
+					lblRowLength.setForeground(UIManager.getColor("Label.Foreground"));
+					
 					// Slider user interaction allowed
 					sldrRowLength.setEnabled(true);
 					
 					// Spinner user interaction allowed
 					spnrRowLength.setEnabled(true);
+					
+					// Check box user interaction allowed
+					chkDefault.setEnabled(true);
 					
 					// Enable save button
 					btnSave.setEnabled(true);
@@ -460,12 +551,25 @@ public class GuitarGUI extends JFrame {
 			}
 		});
 		
-		// Help menu event handler
+		// Guide menu event handler
 		mntmGuide.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Guide guide = new Guide();
 				guide.setVisible(true);
+//				// Center the GUI
+//				guide.setLocationRelativeTo(null);
 				
+			}
+		});
+		
+		// Guide menu event handler
+		mntmAboutGuitarTab.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				About about = new About();
+				about.pack();
+				// Center the GUI
+				about.setLocationRelativeTo(null);
+				about.setVisible(true);
 			}
 		});
 		
@@ -490,6 +594,14 @@ public class GuitarGUI extends JFrame {
 				// Assign new row length
 				rowLength = (int) spnrRowLength.getValue();
 				
+				// Check box is only checked at 60
+				if (rowLength == 60) {
+					chkDefault.setSelected(true);
+				}
+				else {
+					chkDefault.setSelected(false);
+				}
+				
 				// Call main method
 				TabGenerator.main(null);
 				
@@ -513,6 +625,14 @@ public class GuitarGUI extends JFrame {
 				// Assign new row length
 				rowLength = (int) spnrRowLength.getValue();
 				
+				// Check box is only checked at 60
+				if (rowLength == 60) {
+					chkDefault.setSelected(true);
+				}
+				else {
+					chkDefault.setSelected(false);
+				}
+				
 				// Call main method
 				TabGenerator.main(null);
 				
@@ -524,6 +644,33 @@ public class GuitarGUI extends JFrame {
 				
 				// Scroll up
 				taGeneratedFile.setCaretPosition(0);
+			}
+		});
+		
+		chkDefault.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				if (chkDefault.isSelected()) {
+					// Update slider
+					sldrRowLength.setValue(60);
+					
+					// Update spinner
+					spnrRowLength.setValue(60);
+					
+					// Assign new row length
+					rowLength = 60;
+					
+					// Call main method
+					TabGenerator.main(null);
+					
+					// Extract string to print
+					StringBuilder print = TabGenerator.getSB();
+					
+					// Display in text area
+					taGeneratedFile.setText(print.toString());
+					
+					// Scroll up
+					taGeneratedFile.setCaretPosition(0);
+				}
 			}
 		});
 		
