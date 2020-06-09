@@ -2,10 +2,45 @@
 Created by Noah Baculi and Adri Regalado.
 
 February 2019
+Last Updated Jun 2020
 
 Guitar tab generator from note names considering difficulty of different finger positions.
 
-## How to run:
+## How to run (GUI):
+1. Download the `Guitar_GUI_Executable.jar` file.
+2. Run the `Guitar_GUI_Executable.jar` file.
+3. Create or load notes `.txt` file.
+
+	ex: *fur_elise_notes.txt*
+
+	```
+	E4
+	Eb4
+	E4
+	Eb4
+	E4
+	B3
+	D4
+	C4
+
+	A2A3
+	E3
+	A3
+	C3
+	E3
+	A3
+	```
+
+4. Select the desired guitar tuning.
+
+	ex: *Standard*
+
+5. Click 'Generate' and tune the TAB and row length as desired.
+6. Save or copy TAB.
+
+
+
+## How to run (Developer):
 1. Download the project files to a desired directory.
 2. Create a notes source `.txt` file titled `[song_title]_notes.txt` in the first level of the downloaded directory.
 	
