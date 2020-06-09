@@ -344,7 +344,7 @@ public class GuitarGUI extends JFrame {
 		// Create text area to display generated file
 		taGeneratedFile = new JTextArea();
 		spGenerated.setViewportView(taGeneratedFile);
-		taLoadedFile.setEditable(false);
+		// taGeneratedFile.setEditable(false);
 		
 		// Create menu when user right clicks
 		popupMenu = new JPopupMenu();
