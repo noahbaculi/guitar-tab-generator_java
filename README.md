@@ -1,10 +1,15 @@
-# guitar-tab-generator
+# guitar-tab-generator_java
 Created by Noah Baculi and Adri Regalado.
 
 February 2019
+
 Last Updated Jun 2020
 
 Guitar tab generator from note names considering difficulty of different finger positions.
+
+New versions:
+- [Typescript (2022)](https://github.com/noahbaculi/guitar-tab-generator_typescript)
+- [Rust (2023 - )](https://github.com/noahbaculi/guitar-tab-generator)
 
 ## How to run (GUI):
 1. Download the `Guitar_GUI_Executable.jar` file.
