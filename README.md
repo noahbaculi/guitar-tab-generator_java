@@ -9,7 +9,7 @@ Guitar tab generator from note names considering difficulty of different finger 
 
 New versions:
 - [Typescript](https://github.com/noahbaculi/guitar-tab-generator_typescript) (2022)
-- [Rust)](https://github.com/noahbaculi/guitar-tab-generator) (2023 - 
+- [Rust](https://github.com/noahbaculi/guitar-tab-generator) (2023 - )
 
 ## How to run (GUI):
 1. Download the `Guitar_GUI_Executable.jar` file.
